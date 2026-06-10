@@ -1,50 +1,54 @@
-NAME = something
-COMPILER = cc
+ifeq ($(HOSTTYPE),)
+HOSTTYPE := $(shell uname -m)_$(shell uname -s)
+endif
 
-COMPILER_FLAGS = -Wall -Wextra -Werror
-LIBFT_FLAG = -Llibft -l:libft.a
-INCLUDES = -I includes -I libft
+NAME = libft_malloc_$(HOSTTYPE).so
+LINK = libft_malloc.so
+
+CC = cc
+CFLAGS = -Wall -Wextra -Werror -fPIC
 DEPFLAGS = -MMD -MP
+INCLUDES = -I includes -I libft
+LDFLAGS = -shared
+LDLIBS = -Llibft -lft
+
+LIBFT_DIR = libft
 
 SRCS_DIR = src/
 OBJS_DIR = objs/
 
-SRCS = $(SRCS_DIR)main.c
+SRCS = $(SRCS_DIR)malloc.c
 
 OBJS = $(patsubst $(SRCS_DIR)%.c,$(OBJS_DIR)%.o,$(SRCS))
+
 DEPS = $(OBJS:.o=.d)
 
-$(OBJS_DIR)%.o : $(SRCS_DIR)%.c | $(OBJS_DIR)
-	@echo "Compiling $<"
-	@$(COMPILER) $(COMPILER_FLAGS) $(INCLUDES) $(DEPFLAGS) -o $@ -c $<
+all: $(NAME) $(LINK)
 
-$(NAME) : $(OBJS)
+$(NAME): $(OBJS)
 	@echo "Starting LIBFT compilation"
-	@make -s -C libft/
-	@$(COMPILER) $(COMPILER_FLAGS) -o $@ $(OBJS) $(LIBFT_FLAG)
+	@$(MAKE) -s -C $(LIBFT_DIR)
+	@echo "Linking $@"
+	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS)
 
-re : fclean $(NAME)
+$(LINK): $(NAME)
+	@ln -sf $(NAME) $(LINK)
 
-all : $(NAME)
+$(OBJS_DIR)%.o: $(SRCS_DIR)%.c
+	@mkdir -p $(@D)
+	@echo "Compiling $<"
+	@$(CC) $(CFLAGS) $(INCLUDES) $(DEPFLAGS) -o $@ -c $<
 
-clean :
-	@make -s -C libft/ clean
+clean:
+	@$(MAKE) -s -C $(LIBFT_DIR) clean
 	@rm -rf $(OBJS_DIR)
 
-fclean : clean
-	@make -s -C libft/ fclean
-	@rm -rf $(NAME)
+fclean: clean
+	@$(MAKE) -s -C $(LIBFT_DIR) fclean
+	@rm -f $(NAME) $(LINK)
 
-gasoil :
-	@$(MAKE) -j 32 --no-print-directory
+re: fclean all
 
-regasoil : fclean
-	@$(MAKE) -j 32 --no-print-directory
-
-
-$(OBJS_DIR) :
-	@mkdir -p $(OBJS_DIR)
-
-.PHONY: re all clean fclean gasoil regasoil
+.PHONY: all clean fclean re
 
 -include $(DEPS)

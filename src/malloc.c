@@ -1,9 +1,18 @@
 #include <unistd.h>
 
+#include "../include/alloc.h"
+#include "../libft/libft.h"
+
+/**
+ * 
+ */
 void	*malloc(size_t size)
 {
-	(void) size;
-	write(1, "Salut\n\n", 7);
+	// Check if size is LARGE type
+	if (size >= SMALL_BLOCK_SIZE)
+	{
+		ft_printf("Large malloc called\n\n");
+	}
 
 	return (NULL);
 }

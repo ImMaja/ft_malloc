@@ -8,47 +8,71 @@ LINK = libft_malloc.so
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -fPIC
 DEPFLAGS = -MMD -MP
-INCLUDES = -I includes -I libft
+INCLUDES = -I include -I libft
 LDFLAGS = -shared
 LDLIBS = -Llibft -lft
 
 LIBFT_DIR = libft
+LIBFT = $(LIBFT_DIR)/libft.a
 
 SRCS_DIR = src/
 OBJS_DIR = objs/
+TESTS_DIR = test/
+TEST_OBJS_DIR = $(TESTS_DIR)objs/
 
-SRCS = $(SRCS_DIR)malloc.c
+TEST_NAME = test_malloc
+
+SRCS = $(SRCS_DIR)malloc.c \
+	$(SRCS_DIR)align.c \
+	$(SRCS_DIR)heap.c \
+
+TEST_SRCS = $(TESTS_DIR)test.c
 
 OBJS = $(patsubst $(SRCS_DIR)%.c,$(OBJS_DIR)%.o,$(SRCS))
+TEST_OBJS = $(patsubst $(TESTS_DIR)%.c,$(TEST_OBJS_DIR)%.o,$(TEST_SRCS))
 
 DEPS = $(OBJS:.o=.d)
+TEST_DEPS = $(TEST_OBJS:.o=.d)
 
 all: $(NAME) $(LINK)
 
-$(NAME): $(OBJS)
-	@echo "Starting LIBFT compilation"
-	@$(MAKE) -s -C $(LIBFT_DIR)
+$(NAME): $(OBJS) $(LIBFT)
 	@echo "Linking $@"
 	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS)
 
 $(LINK): $(NAME)
 	@ln -sf $(NAME) $(LINK)
 
+test: $(TEST_NAME)
+
+$(TEST_NAME): $(TEST_OBJS) $(LIBFT)
+	@echo "Linking $@"
+	@$(CC) $(CFLAGS) -o $@ $(TEST_OBJS) $(LDLIBS)
+
+$(LIBFT):
+	@echo "Starting LIBFT compilation"
+	@$(MAKE) -s -C $(LIBFT_DIR) FLAGS="$(CFLAGS)"
+
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.c
+	@mkdir -p $(@D)
+	@echo "Compiling $<"
+	@$(CC) $(CFLAGS) $(INCLUDES) $(DEPFLAGS) -o $@ -c $<
+
+$(TEST_OBJS_DIR)%.o: $(TESTS_DIR)%.c
 	@mkdir -p $(@D)
 	@echo "Compiling $<"
 	@$(CC) $(CFLAGS) $(INCLUDES) $(DEPFLAGS) -o $@ -c $<
 
 clean:
 	@$(MAKE) -s -C $(LIBFT_DIR) clean
-	@rm -rf $(OBJS_DIR)
+	@rm -rf $(OBJS_DIR) $(TEST_OBJS_DIR)
 
 fclean: clean
 	@$(MAKE) -s -C $(LIBFT_DIR) fclean
-	@rm -f $(NAME) $(LINK)
+	@rm -f $(NAME) $(LINK) $(TEST_NAME)
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re test
 
--include $(DEPS)
+-include $(DEPS) $(TEST_DEPS)

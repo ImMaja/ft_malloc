@@ -1,0 +1,49 @@
+#ifndef ALLOC_H
+# define ALLOC_H
+
+# define TINY_BLOCK_SIZE 128
+# define SMALL_BLOCK_SIZE 1024
+
+typedef enum e_zone_type
+{
+	TINY,
+	SMALL,
+	LARGE
+}	t_zone_type;
+
+
+typedef struct s_block
+{
+	size_t			size;	// Usable block size (without t_block header)
+	int				free;	// bool?
+	struct s_block	*next;
+	struct s_block	*prev;
+}	t_block;
+
+typedef struct s_zone
+{
+	t_zone_type		type;
+	size_t			size;	// total zone size
+	t_block			*block;
+	struct s_zone	*next;
+	struct s_zone	*prev;
+}	t_zone;
+
+typedef struct s_heap
+{
+	t_zone	*tiny;
+	t_zone	*small;
+	t_zone	*large;
+}	t_heap;
+
+
+/** malloc.c */
+void	*malloc(size_t size);
+
+/** heap.c */
+t_heap	*get_heap(void);
+
+/** align.c */
+size_t	align_16(size_t size);
+
+#endif /** ALLOC_H */

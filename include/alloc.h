@@ -1,6 +1,8 @@
 #ifndef ALLOC_H
 # define ALLOC_H
 
+# include <stddef.h>
+
 # define TINY_BLOCK_SIZE 128
 # define SMALL_BLOCK_SIZE 1024
 
@@ -47,5 +49,9 @@ void	*malloc(size_t size);
 
 /** heap.c */
 t_heap	*get_heap(void);
+t_zone	*get_zone_ptr_by_type(const t_zone_type type);
+
+/** zone.c */
+int		create_new_zone(const t_zone_type type, const size_t size);
 
 #endif /** ALLOC_H */

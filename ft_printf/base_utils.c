@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   base_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maja <maja@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: gpeiffer <gpeiffer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 17:32:15 by gpeiffer          #+#    #+#             */
-/*   Updated: 2024/05/13 16:17:53 by maja             ###   ########.fr       */
+/*   Updated: 2023/11/25 17:36:19 by gpeiffer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../libft.h"
+#include "ft_printf.h"
 
 int	count_chars(unsigned long long dec, int b_len)
 {
@@ -26,7 +26,7 @@ int	count_chars(unsigned long long dec, int b_len)
 }
 
 void	print_positive_base(unsigned long long dec, char *base, int b_len)
-{
+{	
 	if (dec >= (unsigned long long)b_len)
 	{
 		print_positive_base(dec / b_len, base, b_len);

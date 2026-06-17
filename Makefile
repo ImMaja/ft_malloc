@@ -5,15 +5,14 @@ endif
 NAME = libft_malloc_$(HOSTTYPE).so
 LINK = libft_malloc.so
 
+FT_PRINTF_DIR = ft_printf
+FT_PRINTF = $(FT_PRINTF_DIR)/libftprintf.a
+
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -fPIC
 DEPFLAGS = -MMD -MP
-INCLUDES = -I include -I libft
+INCLUDES = -I include -I $(FT_PRINTF_DIR)
 LDFLAGS = -shared
-LDLIBS = -Llibft -lft
-
-LIBFT_DIR = libft
-LIBFT = $(LIBFT_DIR)/libft.a
 
 SRCS_DIR = src/
 OBJS_DIR = objs/
@@ -24,6 +23,7 @@ TEST_NAME = test_malloc
 
 SRCS = $(SRCS_DIR)malloc.c \
 	$(SRCS_DIR)heap.c \
+	$(SRCS_DIR)zone.c \
 
 TEST_SRCS = $(TESTS_DIR)test.c
 
@@ -35,22 +35,22 @@ TEST_DEPS = $(TEST_OBJS:.o=.d)
 
 all: $(NAME) $(LINK)
 
-$(NAME): $(OBJS) $(LIBFT)
+$(NAME): $(OBJS) $(FT_PRINTF)
 	@echo "Linking $@"
-	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS) $(LDLIBS)
+	@$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJS) $(FT_PRINTF)
 
 $(LINK): $(NAME)
 	@ln -sf $(NAME) $(LINK)
 
 test: $(TEST_NAME)
 
-$(TEST_NAME): $(TEST_OBJS) $(LIBFT)
+$(TEST_NAME): $(TEST_OBJS) $(OBJS) $(FT_PRINTF)
 	@echo "Linking $@"
-	@$(CC) $(CFLAGS) -o $@ $(TEST_OBJS) $(LDLIBS)
+	@$(CC) $(CFLAGS) -o $@ $(TEST_OBJS) $(OBJS) $(FT_PRINTF)
 
-$(LIBFT):
-	@echo "Starting LIBFT compilation"
-	@$(MAKE) -s -C $(LIBFT_DIR) FLAGS="$(CFLAGS)"
+$(FT_PRINTF):
+	@echo "Starting FT_PRINTF compilation"
+	@$(MAKE) -s -C $(FT_PRINTF_DIR) CC="$(CC)" FLAGS="$(CFLAGS)"
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.c
 	@mkdir -p $(@D)
@@ -63,11 +63,11 @@ $(TEST_OBJS_DIR)%.o: $(TESTS_DIR)%.c
 	@$(CC) $(CFLAGS) $(INCLUDES) $(DEPFLAGS) -o $@ -c $<
 
 clean:
-	@$(MAKE) -s -C $(LIBFT_DIR) clean
+	@$(MAKE) -s -C $(FT_PRINTF_DIR) clean
 	@rm -rf $(OBJS_DIR) $(TEST_OBJS_DIR)
 
 fclean: clean
-	@$(MAKE) -s -C $(LIBFT_DIR) fclean
+	@$(MAKE) -s -C $(FT_PRINTF_DIR) fclean
 	@rm -f $(NAME) $(LINK) $(TEST_NAME)
 
 re: fclean all

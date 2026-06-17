@@ -7,11 +7,8 @@
 
 int	main(void)
 {
-	printf("sizeof(t_zone): %lu\n", sizeof(t_zone));
-	printf("ZONE_HEADER_SIZE: %lu\n", ZONE_HEADER_SIZE);
-
-	printf("sizeof(t_block): %lu\n", sizeof(t_block));
-	printf("BLOCK_HEADER_SIZE: %lu\n", BLOCK_HEADER_SIZE);
+	void	*ptr = malloc(42000);
+	(void) ptr;
 
 
 	return (0);

@@ -3,26 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   print_functions.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maja <maja@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: gpeiffer <gpeiffer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/22 17:39:18 by gpeiffer          #+#    #+#             */
-/*   Updated: 2024/05/13 16:17:53 by maja             ###   ########.fr       */
+/*   Updated: 2023/11/25 17:50:32 by gpeiffer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../libft.h"
-
-static int	ft_strlen_(char *s)
-{
-	int	i;
-
-	if (!s || *(s) == 0)
-		return (0);
-	i = 0;
-	while (*(s + i) != '\0')
-		i++;
-	return (i);
-}
+#include "ft_printf.h"
 
 int	ft_putchar(char c)
 {
@@ -36,7 +24,7 @@ int	ft_putstr(char *s)
 
 	if (!s)
 		return (ft_putstr("(null)"));
-	len = ft_strlen_(s);
+	len = ft_strlen(s);
 	write(1, s, len);
 	return (len);
 }

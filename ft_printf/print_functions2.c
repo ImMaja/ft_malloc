@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   print_functions2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: maja <maja@student.42.fr>                  +#+  +:+       +#+        */
+/*   By: gpeiffer <gpeiffer@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/25 17:50:22 by gpeiffer          #+#    #+#             */
-/*   Updated: 2024/05/13 16:17:53 by maja             ###   ########.fr       */
+/*   Updated: 2023/11/25 17:52:19 by gpeiffer         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../libft.h"
+#include "ft_printf.h"
 
 int	print_prefixed_hexa(unsigned long long dec)
 {

@@ -20,7 +20,7 @@ typedef enum e_zone_type
 typedef struct s_block
 {
 	size_t			size;	// Usable block size (without t_block header)
-	int				free;	// bool?
+	int				free;
 	struct s_block	*next;
 	struct s_block	*prev;
 }	t_block;

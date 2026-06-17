@@ -23,7 +23,6 @@ TEST_OBJS_DIR = $(TESTS_DIR)objs/
 TEST_NAME = test_malloc
 
 SRCS = $(SRCS_DIR)malloc.c \
-	$(SRCS_DIR)align.c \
 	$(SRCS_DIR)heap.c \
 
 TEST_SRCS = $(TESTS_DIR)test.c

@@ -4,6 +4,11 @@
 # define TINY_BLOCK_SIZE 128
 # define SMALL_BLOCK_SIZE 1024
 
+# define ALIGN_UP(x) (((x) + 15) & ~15)
+
+# define BLOCK_HEADER_SIZE
+# define ZONE_HEADER_SIZE
+
 typedef enum e_zone_type
 {
 	TINY,

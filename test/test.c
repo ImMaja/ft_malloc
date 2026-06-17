@@ -3,11 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 
-
+#include "../include/alloc.h"
 
 int	main(void)
 {
-	
 
 
 	return (0);

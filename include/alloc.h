@@ -6,8 +6,8 @@
 
 # define ALIGN_UP(x) (((x) + 15) & ~15)
 
-# define BLOCK_HEADER_SIZE
-# define ZONE_HEADER_SIZE
+# define BLOCK_HEADER_SIZE ALIGN_UP(sizeof(t_block))
+# define ZONE_HEADER_SIZE ALIGN_UP(sizeof(t_zone))
 
 typedef enum e_zone_type
 {
@@ -47,8 +47,5 @@ void	*malloc(size_t size);
 
 /** heap.c */
 t_heap	*get_heap(void);
-
-/** align.c */
-size_t	align_16(size_t size);
 
 #endif /** ALLOC_H */

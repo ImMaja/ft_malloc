@@ -24,6 +24,7 @@ TEST_NAME = test_malloc
 SRCS = $(SRCS_DIR)malloc.c \
 	$(SRCS_DIR)heap.c \
 	$(SRCS_DIR)zone.c \
+	$(SRCS_DIR)utils/ft_putnbr_fd.c \
 
 TEST_SRCS = $(TESTS_DIR)test.c
 

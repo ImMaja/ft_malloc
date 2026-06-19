@@ -14,25 +14,18 @@ t_heap	*get_heap(void)
 
 /**
  * @brief Return pointer of corresponding linked-list type
- * if type is TINY, return heap->tiny
+ * if type is TINY, return &heap->tiny
  * ...
  * @param type The enum type
- * @return Beginning of a zone linked-list
+ * @return Ptr to a heap zone
  */
-t_zone	*get_zone_ptr_by_type(const t_zone_type type)
+t_zone	**get_zone_ptr_by_type(const t_zone_type type)
 {
 	t_heap	*heap = get_heap();
 
-	switch (type)
-	{
-		case TINY:
-			return (heap->tiny);
-		case SMALL:
-			return (heap->small);
-		case LARGE:
-			return (heap->large);
-	}
-
-	// Should nerver happend
-	return (NULL);
+	if (type == TINY)
+		return (&heap->tiny);
+	else if (type == SMALL)
+		return (&heap->small);
+	return (&heap->large);
 }

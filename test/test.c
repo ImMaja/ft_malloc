@@ -3,12 +3,14 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../ft_printf/ft_printf.h"
 #include "../include/alloc.h"
 
 int	main(void)
 {
 	void	*ptr = malloc(42000);
 	(void) ptr;
+
 
 
 	return (0);

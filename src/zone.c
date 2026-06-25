@@ -1,7 +1,7 @@
-#include "../include/alloc.h"
-
 #include <unistd.h>
 #include <sys/mman.h>
+
+#include "../include/alloc.h"
 
 /**
  * @brief Allocate a new zone with mmap and add it in corresponding heap linked-list
@@ -42,7 +42,7 @@ t_zone	*create_new_zone(const t_zone_type type, const size_t size)
 	// Push the new zone in corresponding linked-list
 	push_new_zone_in_linked_list(heap_zone, (t_zone *) mem);
 
-	// return ((t_zone *) mem);
+	return ((t_zone *) mem);
 	// return mem ou payload?
 }
 

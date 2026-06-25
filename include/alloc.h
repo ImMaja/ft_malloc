@@ -4,15 +4,23 @@
 # include <stddef.h>
 # include <stdbool.h>
 
+/** Define zone sizes */
 # define TINY_BLOCK_SIZE 128
 # define SMALL_BLOCK_SIZE 1024
 
+/** Define number of elements of heap struct */
+# define HEAP_ELEM 3
+
+/** Define min number of blocks for TINY and SMALL zones */
 # define ZONE_ALLOC_COUNT 100
 
+/** Align number to 16 macro */
 # define ALIGN_UP(x) (((x) + 15) & ~15)
 
+/** Define sizes of t_zone and t_block header aligned to 16 */
 # define BLOCK_HEADER_SIZE ALIGN_UP(sizeof(t_block))
 # define ZONE_HEADER_SIZE ALIGN_UP(sizeof(t_zone))
+
 
 typedef enum e_zone_type
 {
@@ -55,7 +63,7 @@ t_heap	*get_heap(void);
 t_zone	**get_zone_ptr_by_type(const t_zone_type type);
 
 /** zone.c */
-int		create_new_zone(const t_zone_type type, const size_t size);
+t_zone	*create_new_zone(const t_zone_type type, const size_t size);
 
 /** zone_utils.c */
 void	push_new_zone_in_linked_list(t_zone **heap_zone, t_zone *new_zone);

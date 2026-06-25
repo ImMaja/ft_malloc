@@ -8,8 +8,12 @@
 
 int	main(void)
 {
-	void	*ptr = malloc(42000);
+	void	*ptr = malloc(240);
+	void	*lol = malloc(240);
+	// 0xf50000
+	// 0xf50008
 	(void) ptr;
+	(void) lol;
 
 
 

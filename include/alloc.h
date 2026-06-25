@@ -58,6 +58,9 @@ typedef struct s_heap
 /** malloc.c */
 void	*malloc(size_t size);
 
+/** show_alloc_mem.c */
+void	show_alloc_mem(void);
+
 /** heap.c */
 t_heap	*get_heap(void);
 t_zone	**get_zone_ptr_by_type(const t_zone_type type);
@@ -69,6 +72,9 @@ t_zone	*create_new_zone(const t_zone_type type, const size_t size);
 void	push_new_zone_in_linked_list(t_zone **heap_zone, t_zone *new_zone);
 size_t	calculate_zone_length(const t_zone_type type, const size_t size);
 void	init_zone_header(t_zone *mem, const t_zone_type type, const size_t size);
+
+/** block.c */
+void	create_default_block(t_zone *zone);
 
 /** utils/ */
 void	ft_putnbr_fd(int n, int fd);

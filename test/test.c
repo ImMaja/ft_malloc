@@ -8,13 +8,19 @@
 
 int	main(void)
 {
-	void	*ptr = malloc(240);
+	void	*ptr = malloc(24);
 	void	*lol = malloc(240);
-	// 0xf50000
-	// 0xf50008
+	void	*xd = malloc(2400);
+	void	*mdr = malloc(24000);
+	void	*xptdr = malloc(240000);
 	(void) ptr;
 	(void) lol;
+	(void) xd;
+	(void) mdr;
+	(void) xptdr;
 
+	ft_printf("\n\n");
+	show_alloc_mem();
 
 
 	return (0);

@@ -33,21 +33,21 @@ static t_zone	*find_next_zone(const t_heap *heap, const uintptr_t last)
 		heap->small,
 		heap->large
 	};
-	t_zone		*iter = NULL;
+	t_zone		*z = NULL;
 	t_zone		*best = NULL;
 	uintptr_t	best_addr = UINTPTR_MAX;
 
 	for (uint8_t i = 0 ; i < HEAP_ELEM ; i++)
 	{
-		iter = zones[i];
-		while (iter)
+		z = zones[i];
+		while (z)
 		{
-			if ( (uintptr_t) iter > last && (uintptr_t) iter < best_addr )
+			if ( (uintptr_t) z > last && (uintptr_t) z < best_addr )
 			{
-				best = iter;
-				best_addr = (uintptr_t) iter;
+				best = z;
+				best_addr = (uintptr_t) z;
 			}
-			iter = iter->next;
+			z = z->next;
 		}
 	}
 
@@ -56,13 +56,29 @@ static t_zone	*find_next_zone(const t_heap *heap, const uintptr_t last)
 
 
 /**
- * 
+ * @brief Show all allocated zone
  */
 void	show_alloc_mem(void)
 {
-	t_heap	*heap = get_heap();
+	t_heap		*heap = get_heap();
+	uintptr_t	last = 0;
+	t_zone		*z = NULL;
+	t_block		*b = NULL;
+	size_t		total_alloc = 0;
 
-	
-
-	size_t	total_alloc_size = 0;
+	while ( ( z = find_next_zone(heap, last) ) != NULL )
+	{
+		ft_printf("%s : %p\n", get_str_type(z->type), z);
+		b = z->blocks;
+		if (!b)
+			ft_printf("No block in this zone, that should not happend ?\n");
+		while (b)
+		{
+			ft_printf("%p - %p : %d bytes\n", b + BLOCK_HEADER_SIZE, b + BLOCK_HEADER_SIZE + b->payload_size, b->payload_size);
+			total_alloc += b->payload_size;
+			b = b->next;
+		}
+		last = (uintptr_t) z;
+	}
+	ft_printf("Total : %d bytes\n", total_alloc);
 }

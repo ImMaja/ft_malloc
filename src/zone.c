@@ -39,10 +39,12 @@ t_zone	*create_new_zone(const t_zone_type type, const size_t size)
 	// Initialize new zone header
 	init_zone_header((t_zone *) mem, type, zone_length);
 
+	// Initialize a default block for the new zone
+	create_default_block((t_zone *) mem);
+
 	// Push the new zone in corresponding linked-list
 	push_new_zone_in_linked_list(heap_zone, (t_zone *) mem);
 
 	return ((t_zone *) mem);
-	// return mem ou payload?
 }
 

@@ -22,6 +22,7 @@ TEST_OBJS_DIR = $(TESTS_DIR)objs/
 TEST_NAME = test_malloc
 
 SRCS = $(SRCS_DIR)malloc.c \
+	$(SRCS_DIR)show_alloc_mem.c \
 	$(SRCS_DIR)heap.c \
 	$(SRCS_DIR)zone.c \
 	$(SRCS_DIR)zone_utils.c \

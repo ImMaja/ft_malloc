@@ -2,6 +2,7 @@
 # define ALLOC_H
 
 # include <stddef.h>
+# include <stdbool.h>
 
 # define TINY_BLOCK_SIZE 128
 # define SMALL_BLOCK_SIZE 1024
@@ -55,6 +56,11 @@ t_zone	**get_zone_ptr_by_type(const t_zone_type type);
 
 /** zone.c */
 int		create_new_zone(const t_zone_type type, const size_t size);
+
+/** zone_utils.c */
+void	push_new_zone_in_linked_list(t_zone **heap_zone, t_zone *new_zone);
+size_t	calculate_zone_length(const t_zone_type type, const size_t size);
+void	init_zone_header(t_zone *mem, const t_zone_type type, const size_t size);
 
 /** utils/ */
 void	ft_putnbr_fd(int n, int fd);

@@ -27,5 +27,7 @@ t_zone	**get_zone_ptr_by_type(const t_zone_type type)
 		return (&heap->tiny);
 	else if (type == SMALL)
 		return (&heap->small);
-	return (&heap->large);
+	else if (type == LARGE)
+		return (&heap->large);
+	return (NULL);
 }

@@ -3,14 +3,11 @@
 #include "../ft_printf/ft_printf.h"
 #include "../include/alloc.h"
 
-/**
- * 
- */
 void	*malloc(size_t size)
 {
 	ft_printf("malloc called -------------------------\n");
 	// Check if size is LARGE type
-	if (size >= SMALL_BLOCK_SIZE)
+	if (size > SMALL_BLOCK_SIZE)
 	{
 		ft_printf("malloc is a LARGE allocation ----------\n");
 		int	ret = create_new_zone(LARGE, size);

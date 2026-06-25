@@ -75,7 +75,7 @@ size_t	calculate_zone_length(const t_zone_type type, const size_t size)
 	else
 		raw_size = ZONE_HEADER_SIZE
 			+ BLOCK_HEADER_SIZE
-			+ ALIGN_UP(size);
+			+ size;
 
 	return (align_page(raw_size));
 }

@@ -3,7 +3,9 @@
 #include "../include/alloc.h"
 
 /**
- * @brief
+ * @brief Create a default block in a new zone
+ * Default blok will use all memory available in the zone
+ * @param zone The zone who need a default block
  */
 void	create_default_block(t_zone *zone)
 {
@@ -16,10 +18,47 @@ void	create_default_block(t_zone *zone)
 	b->prev = NULL;
 }
 
+t_block	*find_available_block(const t_zone *zone, const size_t size)
+{
+	t_block	*b = NULL;
+
+	while (zone)
+	{
+		b = zone->blocks;
+		while (b)
+		{
+			if (b->free && b->payload_size >= size + BLOCK_HEADER_SIZE + MIN_PAYLOAD_SIZE)
+				return (b);
+			b = b->next;
+		}
+		zone = zone->next;
+	}
+
+	return (NULL);
+}
+
 /**
- * @brief
+ * @brief Split an available block into a newly allocated block
+ * We assume that 'split_block' is available and have enough
+ * room for the new alloc of size 'size'
+ * @param split The block to split
+ * @param size The size of the new block (already aligned)
+ * @return Pointer to the ew block payload
  */
-// void	*create_block(t_zone *zone, const size_t size)
-// {
-	// return ();
-// }
+void	*split_block(t_block *split, const size_t size)
+{
+	t_block	*next = (t_block *) split + BLOCK_HEADER_SIZE + size;
+
+	split->next = next;
+	next->prev = split;
+
+	next->payload_size = split->payload_size - BLOCK_HEADER_SIZE - size;
+	next->free = 0;
+	next->next = NULL;
+
+	split->payload_size = size;
+	split->free = 1;
+	split->payload_size = size;
+
+	return (split + BLOCK_HEADER_SIZE);
+}

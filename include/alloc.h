@@ -4,9 +4,12 @@
 # include <stddef.h>
 # include <stdbool.h>
 
-/** Define zone sizes */
+/** Define zone threshold */
 # define TINY_BLOCK_SIZE 128
 # define SMALL_BLOCK_SIZE 1024
+
+/** Min payload size */
+# define MIN_PAYLOAD_SIZE 16
 
 /** Define number of elements of heap struct */
 # define HEAP_ELEM 3
@@ -75,6 +78,8 @@ void	init_zone_header(t_zone *mem, const t_zone_type type, const size_t size);
 
 /** block.c */
 void	create_default_block(t_zone *zone);
+t_block	*find_available_block(const t_zone *zone, const size_t size);
+void	*split_block(t_block *split, const size_t size);
 
 /** utils/ */
 void	ft_putnbr_fd(int n, int fd);

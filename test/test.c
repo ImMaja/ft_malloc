@@ -8,10 +8,20 @@
 
 int	main(void)
 {
-	void	*arr[5] = {
+	void	*arr[15] = {
 		ft_malloc(12),
 		ft_malloc(1024),
 		ft_malloc(1025),
+		ft_malloc(1000000),
+		ft_malloc(13),
+		ft_malloc(142),
+		ft_malloc(144),
+		ft_malloc(890),
+		ft_malloc(549),
+		ft_malloc(1),
+		ft_malloc(1),
+		ft_malloc(1),
+		ft_malloc(1),
 		ft_malloc(1),
 		ft_malloc(244)
 	};

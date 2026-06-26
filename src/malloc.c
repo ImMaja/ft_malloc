@@ -24,9 +24,9 @@ void	*ft_malloc(size_t size)
 		if (!zone)
 			return (NULL);
 		
-		split = (t_block *) zone + ZONE_HEADER_SIZE;
+		split = (t_block *) ( (char *) zone + ZONE_HEADER_SIZE );
 		split->payload_size = size;
-		return ((void *) split + BLOCK_HEADER_SIZE);
+		return ((char *) split + BLOCK_HEADER_SIZE);
 	}
 	// New alloc is a TINY or SMALL allocation
 	// Try to find an available block for the allocation
@@ -38,7 +38,7 @@ void	*ft_malloc(size_t size)
 		zone = create_new_zone(type, size);
 		if (!zone)
 			return (NULL);
-		split = (t_block *) zone + ZONE_HEADER_SIZE;
+		split = (t_block *) ( (char *) zone + ZONE_HEADER_SIZE );
 	}
 
 	// Split available block for the new allocation

@@ -74,8 +74,11 @@ void	show_alloc_mem(void)
 			ft_printf("No block in this zone, that should not happend ?\n");
 		while (b)
 		{
-			ft_printf("%p - %p : %d bytes\n", (uintptr_t) b + BLOCK_HEADER_SIZE, (uintptr_t) b + BLOCK_HEADER_SIZE + b->payload_size, b->payload_size);
-			total_alloc += b->payload_size;
+			if (b->free == 0)
+			{
+				ft_printf("%p - %p : %d bytes\n", (uintptr_t) b + BLOCK_HEADER_SIZE, (uintptr_t) b + BLOCK_HEADER_SIZE + b->payload_size, b->payload_size);
+				total_alloc += b->payload_size;
+			}
 			b = b->next;
 		}
 		last = (uintptr_t) z;

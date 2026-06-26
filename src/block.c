@@ -9,11 +9,11 @@
  */
 void	create_default_block(t_zone *zone)
 {
-	t_block	*b = (t_block *) zone + ZONE_HEADER_SIZE;
+	t_block	*b = (t_block *) ( (char *) zone + ZONE_HEADER_SIZE );
 
 	zone->blocks = b;
 	b->payload_size = zone->size - ZONE_HEADER_SIZE - BLOCK_HEADER_SIZE;
-	b->free = 0;
+	b->free = 1;
 	b->next = NULL;
 	b->prev = NULL;
 }
@@ -47,18 +47,18 @@ t_block	*find_available_block(const t_zone *zone, const size_t size)
  */
 void	*split_block(t_block *split, const size_t size)
 {
-	t_block	*next = (t_block *) split + BLOCK_HEADER_SIZE + size;
+	t_block	*next = (t_block *) ( (char *) split + BLOCK_HEADER_SIZE + size );
 
 	split->next = next;
 	next->prev = split;
 
 	next->payload_size = split->payload_size - BLOCK_HEADER_SIZE - size;
-	next->free = 0;
+	next->free = 1;
 	next->next = NULL;
 
 	split->payload_size = size;
-	split->free = 1;
+	split->free = 0;
 	split->payload_size = size;
 
-	return (split + BLOCK_HEADER_SIZE);
+	return ( (char *) split + BLOCK_HEADER_SIZE);
 }

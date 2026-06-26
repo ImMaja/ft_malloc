@@ -1,7 +1,7 @@
 
 A faire avant re rendre:
 	Virer tous les ft_print et write de test
-	virer ft_malloc, ft_realloc et ft_free
+
 
 LD_PRELOAD=./libft_malloc.so ./a.out
 

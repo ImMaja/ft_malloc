@@ -4,7 +4,7 @@
 #include "../include/alloc.h"
 
 
-void	*ft_malloc(size_t size)
+void	*malloc(size_t size)
 {
 	ft_printf("malloc called with size %u -------------------------\n", size);
 

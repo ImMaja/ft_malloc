@@ -59,7 +59,7 @@ typedef struct s_heap
 
 
 /** malloc.c */
-void		*ft_malloc(size_t size);
+void		*malloc(size_t size);
 
 /** realloc.c */
 void		*realloc(void *ptr, size_t size);

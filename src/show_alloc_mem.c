@@ -23,19 +23,19 @@ static char	*get_str_type(const t_zone_type type)
 /**
  * @brief Iterate on all t_zone linked-list to find the
  * next zone by incresing memory address
- * @param heap The struct containing all t_zone linked-list
  * @param last The previous zone address
  */
-static t_zone	*find_next_zone(const t_heap *heap, const uintptr_t last)
+static t_zone	*find_next_zone(const uintptr_t last)
 {
-	t_zone		*zones[HEAP_ELEM] = {
+	const t_heap	*heap = get_heap();
+	const t_zone	*zones[HEAP_ELEM] = {
 		heap->tiny,
 		heap->small,
 		heap->large
 	};
-	t_zone		*z = NULL;
-	t_zone		*best = NULL;
-	uintptr_t	best_addr = UINTPTR_MAX;
+	t_zone			*z = NULL;
+	t_zone			*best = NULL;
+	uintptr_t		best_addr = UINTPTR_MAX;
 
 	for (uint8_t i = 0 ; i < HEAP_ELEM ; i++)
 	{
@@ -60,13 +60,12 @@ static t_zone	*find_next_zone(const t_heap *heap, const uintptr_t last)
  */
 void	show_alloc_mem(void)
 {
-	t_heap		*heap = get_heap();
 	uintptr_t	last = 0;
 	t_zone		*z = NULL;
 	t_block		*b = NULL;
 	size_t		total_alloc = 0;
 
-	while ( ( z = find_next_zone(heap, last) ) != NULL )
+	while ( ( z = find_next_zone(last) ) != NULL )
 	{
 		ft_printf("%s : %p\n", get_str_type(z->type), z);
 		b = z->blocks;

@@ -4,6 +4,21 @@
 
 
 /**
+ * @brief Retrieve an allocation type by its size
+ * @param size The size of the allocation
+ * @return The corresponding type
+ */
+t_zone_type	get_zone_type_by_size(const size_t size)
+{
+	if (size > SMALL_BLOCK_SIZE)
+		return(LARGE);
+	else if (size > TINY_BLOCK_SIZE && size < SMALL_BLOCK_SIZE)
+		return(SMALL);
+	return(TINY);
+}
+
+
+/**
  * @brief Iterate on a linked-list of zone
  * Can be a linked-list of either TINY, SMALL or LARGE zones
  * @param heap_zone Linked-list of zones

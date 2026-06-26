@@ -3,48 +3,46 @@
 #include "../ft_printf/ft_printf.h"
 #include "../include/alloc.h"
 
-void	*malloc(size_t size)
+
+void	*ft_malloc(size_t size)
 {
 	ft_printf("malloc called with size %u -------------------------\n", size);
 
-	t_zone_type	type;
-	t_heap		*heap = get_heap();
+	t_zone_type	type = get_zone_type_by_size(size);
 	t_zone		*zone = NULL;
+	t_block		*split = NULL;
+	void		*payload = NULL;
 
-	/** Align size to 16, ex: 1000 -> 1008 */
+	// Align size to 16, ex: 1000 -> 1008
 	size = ALIGN_UP(size);
 
-	if (size > SMALL_BLOCK_SIZE)
-		type = LARGE;
-	else if (size > TINY_BLOCK_SIZE && size < SMALL_BLOCK_SIZE)
-		type = SMALL;
-	else
-		type = TINY;
-
-	/** New alloc is a LARGE allocation */
+	// New alloc is a LARGE allocation
+	// Create a zone and a default block for the alloc
 	if (type == LARGE)
 	{
-		/** Create a new zone */
 		t_zone	*zone = create_new_zone(type, size);
-
-		/** Ptr to the default block of new zone */
-		t_block	*default_block_ptr = (t_block *) zone + ZONE_HEADER_SIZE;
-
-		/** Create a new block in the new zone */
-		void	*payload = split_block(default_block_ptr, size);
-
-		return (payload);
+		if (!zone)
+			return (NULL);
+		
+		split = (t_block *) zone + ZONE_HEADER_SIZE;
+		split->payload_size = size;
+		return ((void *) split + BLOCK_HEADER_SIZE);
 	}
-
-	zone = get_zone_ptr_by_type(type);
-	t_block	*split_block = find_available_block(zone, size);
-	if (!split_block)
+	// New alloc is a TINY or SMALL allocation
+	// Try to find an available block for the allocation
+	// If no available block, create a new zone and a default block
+	zone = *get_zone_ptr_by_type(type);
+	split = find_available_block(zone, size);
+	if (!split)
 	{
 		zone = create_new_zone(type, size);
 		if (!zone)
 			return (NULL);
-		
+		split = (t_block *) zone + ZONE_HEADER_SIZE;
 	}
 
-	return (NULL);
+	// Split available block for the new allocation
+	payload = split_block(split, size);
+
+	return (payload);
 }

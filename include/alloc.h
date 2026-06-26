@@ -59,29 +59,36 @@ typedef struct s_heap
 
 
 /** malloc.c */
-void	*malloc(size_t size);
+void		*ft_malloc(size_t size);
+
+/** realloc.c */
+void		*realloc(void *ptr, size_t size);
+
+/** free.c */
+void		free(void *tr);
 
 /** show_alloc_mem.c */
-void	show_alloc_mem(void);
+void		show_alloc_mem(void);
 
 /** heap.c */
-t_heap	*get_heap(void);
-t_zone	**get_zone_ptr_by_type(const t_zone_type type);
+t_heap		*get_heap(void);
+t_zone		**get_zone_ptr_by_type(const t_zone_type type);
 
 /** zone.c */
-t_zone	*create_new_zone(const t_zone_type type, const size_t size);
+t_zone		*create_new_zone(const t_zone_type type, const size_t size);
 
 /** zone_utils.c */
-void	push_new_zone_in_linked_list(t_zone **heap_zone, t_zone *new_zone);
-size_t	calculate_zone_length(const t_zone_type type, const size_t size);
-void	init_zone_header(t_zone *mem, const t_zone_type type, const size_t size);
+t_zone_type	get_zone_type_by_size(const size_t size);
+void		push_new_zone_in_linked_list(t_zone **heap_zone, t_zone *new_zone);
+size_t		calculate_zone_length(const t_zone_type type, const size_t size);
+void		init_zone_header(t_zone *mem, const t_zone_type type, const size_t size);
 
 /** block.c */
-void	create_default_block(t_zone *zone);
-t_block	*find_available_block(const t_zone *zone, const size_t size);
-void	*split_block(t_block *split, const size_t size);
+void		create_default_block(t_zone *zone);
+t_block		*find_available_block(const t_zone *zone, const size_t size);
+void		*split_block(t_block *split, const size_t size);
 
 /** utils/ */
-void	ft_putnbr_fd(int n, int fd);
+void		ft_putnbr_fd(int n, int fd);
 
 #endif /** ALLOC_H */

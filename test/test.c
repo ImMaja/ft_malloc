@@ -8,16 +8,22 @@
 
 int	main(void)
 {
-	void	*ptr = malloc(24);
-	void	*lol = malloc(240);
-	void	*xd = malloc(2400);
-	void	*mdr = malloc(24000);
-	void	*xptdr = malloc(240000);
-	(void) ptr;
-	(void) lol;
-	(void) xd;
-	(void) mdr;
-	(void) xptdr;
+	// void	*ptr = malloc(24);
+	// void	*lol = malloc(240);
+	// void	*xd = malloc(2400);
+	// void	*mdr = malloc(24000);
+	char	*xptdr = ft_malloc(240000);
+	// (void) ptr;
+	// (void) lol;
+	// (void) xd;
+	// (void) mdr;
+	// (void) xptdr;
+
+	for (int i = 0 ; i < 239999 ; i++)
+		xptdr[i] = 'A';
+	xptdr[239999] = '\0';
+	#include <string.h>
+	ft_printf("xptdr len: %d \n", strlen(xptdr));
 
 	ft_printf("\n\n");
 	show_alloc_mem();

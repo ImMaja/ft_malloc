@@ -13,7 +13,7 @@ void	create_default_block(t_zone *zone)
 
 	zone->blocks = b;
 	b->payload_size = zone->size - ZONE_HEADER_SIZE - BLOCK_HEADER_SIZE;
-	b->free = 1;
+	b->free = 0;
 	b->next = NULL;
 	b->prev = NULL;
 }

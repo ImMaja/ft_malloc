@@ -8,17 +8,14 @@
 
 int	main(void)
 {
-	void	*ptr = ft_malloc(24);
-	void	*lol = ft_malloc(31);
-	void	*xd = ft_malloc(54);
-	void	*mdr = ft_malloc(127);
-	void	*xptdr = ft_malloc(128);
-	(void) ptr;
-	(void) lol;
-	(void) xd;
-	(void) mdr;
-	(void) xptdr;
-
+	void	*arr[5] = {
+		ft_malloc(12),
+		ft_malloc(1024),
+		ft_malloc(1025),
+		ft_malloc(1),
+		ft_malloc(244)
+	};
+	(void) arr;
 
 
 	ft_printf("\n\n");

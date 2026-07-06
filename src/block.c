@@ -43,7 +43,7 @@ t_block	*find_available_block(const t_zone *zone, const size_t size)
  * room for the new alloc of size 'size'
  * @param split The block to split
  * @param size The size of the new block (already aligned)
- * @return Pointer to the ew block payload
+ * @return Pointer to the new block payload
  */
 void	*split_block(t_block *split, const size_t size)
 {

@@ -2,13 +2,15 @@
 
 #include "../include/alloc.h"
 
+
 /**
- * @brief Find the corresponding zone of a payload address
- * If payload_addr is not in any zone, this functionn will return NULL
- * @param payload_addr The address of the payload
+ * @brief Find the corresponding zone of a payload ptr
+ * If ptr is not in any zone, this functionn will return NULL
+ * @param ptr Pointer to a payload
  */
-static t_zone	*find_zone_from_ptr(const uintptr_t payload_addr)
+t_zone	*find_zone_from_payload_ptr(const void *ptr)
 {
+	const uintptr_t	payload_addr = (uintptr_t) ptr;
 	const t_heap	*heap = get_heap();
 	const t_zone	*zones[HEAP_ELEM] = {
 		heap->tiny,
@@ -34,16 +36,17 @@ static t_zone	*find_zone_from_ptr(const uintptr_t payload_addr)
 	return (NULL);
 }
 
+
 /**
- * @brief Find a block with the given payload 'ptr'
- * If 'ptr' is not a valid payload ptr given by malloc,
+ * @brief Find the block of the given 'payload_ptr' in the zone 'zone'
+ * If 'payload_ptr' is not a valid payload ptr given by malloc,
  * this function will return NULL
- * @param ptr The payload ptr of a block
+ * @param zone The zone of the 'payload_ptr' block
+ * @param payload_ptr The payload ptr of a block
  * @return Block ptr if 'ptr' is valid, NULL otherwise
  */
-t_block	*find_block_from_ptr(const void *ptr)
+t_block	*find_block_from_payload_ptr(const t_zone *zone, const void *payload_ptr)
 {
-	t_zone	*zone = find_zone_from_ptr((uintptr_t) ptr);
 	t_block	*to_find = NULL;
 	t_block	*b = NULL;
 

@@ -4,6 +4,13 @@
 # include <stddef.h>
 # include <stdbool.h>
 
+/** Align number to 16 macro */
+# define ALIGN_UP(x) (((x) + 15) & ~15)
+
+/** Define sizes of t_zone and t_block header aligned to 16 */
+# define BLOCK_HEADER_SIZE ALIGN_UP(sizeof(t_block))
+# define ZONE_HEADER_SIZE ALIGN_UP(sizeof(t_zone))
+
 /** Define zone threshold */
 # define TINY_BLOCK_SIZE 128
 # define SMALL_BLOCK_SIZE 1024
@@ -11,18 +18,17 @@
 /** Min payload size */
 # define MIN_PAYLOAD_SIZE 16
 
+/**
+ * Define the minimal requiered size to split a block
+ * Used when the size of a realloc is smaller then the block_size
+*/
+# define MIN_SPLIT_SIZE (BLOCK_HEADER_SIZE + MIN_PAYLOAD_SIZE)
+
 /** Define number of elements of heap struct */
 # define HEAP_ELEM 3
 
 /** Define min number of blocks for TINY and SMALL zones */
 # define ZONE_ALLOC_COUNT 100
-
-/** Align number to 16 macro */
-# define ALIGN_UP(x) (((x) + 15) & ~15)
-
-/** Define sizes of t_zone and t_block header aligned to 16 */
-# define BLOCK_HEADER_SIZE ALIGN_UP(sizeof(t_block))
-# define ZONE_HEADER_SIZE ALIGN_UP(sizeof(t_zone))
 
 
 typedef enum e_zone_type
@@ -87,6 +93,10 @@ void		init_zone_header(t_zone *mem, const t_zone_type type, const size_t size);
 void		create_default_block(t_zone *zone);
 t_block		*find_available_block(const t_zone *zone, const size_t size);
 void		*split_block(t_block *split, const size_t size);
+
+/** block_utils.c */
+t_zone		*find_zone_from_payload_ptr(const void *ptr);
+t_block		*find_block_from_payload_ptr(const t_zone *zone, const void *payload_ptr);
 
 /** utils/ */
 void		ft_putnbr_fd(int n, int fd);

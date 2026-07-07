@@ -71,3 +71,28 @@ t_block	*find_block_from_payload_ptr(const t_zone *zone, const void *payload_ptr
 
 	return (NULL);
 }
+
+
+/**
+ * @brief Merge consecutive free blocks near 'free_block'
+ * @param free_block Pointer to a free block
+ */
+void	merge_free_blocks(t_block *free_block)
+{
+	t_block	*iter = free_block;
+
+	if (!free_block || !free_block->free)
+		return ;
+
+	// Find first free block
+	while (iter->prev && iter->prev->free)
+		iter = iter->prev;
+
+	while (iter->next && iter->next->free)
+	{
+		iter->payload_size += BLOCK_HEADER_SIZE + iter->next->payload_size;
+		if (iter->next->next)
+			iter->next->next->prev = iter;
+		iter->next = iter->next->next;
+	}
+}

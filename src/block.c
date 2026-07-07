@@ -18,6 +18,12 @@ void	create_default_block(t_zone *zone)
 	b->prev = NULL;
 }
 
+
+/**
+ * @brief REFAIRE CETTE FONCTION je pense -------------------------------------------------
+ * faut reflechir a comment utiliser un block free qui a asser de size mais pas asser pour split
+ * le if est chelou on perd de la memoire
+ */
 t_block	*find_available_block(const t_zone *zone, const size_t size)
 {
 	t_block	*b = NULL;
@@ -38,27 +44,37 @@ t_block	*find_available_block(const t_zone *zone, const size_t size)
 }
 
 /**
- * @brief Split an available block into a newly allocated block
- * We assume that 'split_block' is available and have enough
- * room for the new alloc of size 'size'
- * @param split The block to split
- * @param size The size of the new block (already aligned)
- * @return Pointer to the new block payload
+ * @brief Split a block and create a free remainder block
+ * @param block The block to split
+ * @param size The aligned size of the new block
  */
-void	*split_block(t_block *split, const size_t size)
+void	split_block(t_block *block, const size_t size)
 {
-	t_block	*next = (t_block *) ( (char *) split + BLOCK_HEADER_SIZE + size );
+	t_block	*new_next = NULL;
+	t_block	*old_next = NULL;
 
-	split->next = next;
-	next->prev = split;
+	if (!block)
+		return ;
+	if (size >= block->payload_size)
+		return ;
+	if (block->payload_size - size < MIN_SPLIT_SIZE)
+		return ;
 
-	next->payload_size = split->payload_size - BLOCK_HEADER_SIZE - size;
-	next->free = 1;
-	next->next = NULL;
+	new_next = (t_block *) ( (char *) block + BLOCK_HEADER_SIZE + size );
+	old_next = block->next;
 
-	split->payload_size = size;
-	split->free = 0;
-	split->payload_size = size;
+	block->next = new_next;
+	new_next->prev = block;
 
-	return ( (char *) split + BLOCK_HEADER_SIZE);
+	new_next->payload_size = block->payload_size - BLOCK_HEADER_SIZE - size;
+	new_next->free = 1;
+	new_next->next = old_next;
+	if (old_next)
+		old_next->prev = new_next;
+
+	block->payload_size = size;
+	block->free = 0;
+
+	// Merge the two next blocks if they are both free
+	merge_free_blocks(new_next);
 }

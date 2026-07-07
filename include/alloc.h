@@ -71,7 +71,7 @@ void		*malloc(size_t size);
 void		*realloc(void *ptr, size_t size);
 
 /** free.c */
-void		free(void *tr);
+void		free(void *ptr);
 
 /** show_alloc_mem.c */
 void		show_alloc_mem(void);
@@ -92,13 +92,14 @@ void		init_zone_header(t_zone *mem, const t_zone_type type, const size_t size);
 /** block.c */
 void		create_default_block(t_zone *zone);
 t_block		*find_available_block(const t_zone *zone, const size_t size);
-void		*split_block(t_block *split, const size_t size);
+void		split_block(t_block *split, const size_t size);
 
 /** block_utils.c */
 t_zone		*find_zone_from_payload_ptr(const void *ptr);
 t_block		*find_block_from_payload_ptr(const t_zone *zone, const void *payload_ptr);
+void		merge_free_blocks(t_block *free_block);
 
 /** utils/ */
-void		ft_putnbr_fd(int n, int fd);
+void		*ft_memcpy(void *dest, const void *src, size_t n);
 
 #endif /** ALLOC_H */

@@ -93,6 +93,7 @@ void		split_block(t_block *block, const size_t size);
 
 /** block_utils.c */
 t_block		*find_free_block(const t_zone_type type, const size_t size);
+void		merge_free_blocks(t_block *free_block);
 
 /** utils/ */
 void		*ft_memcpy(void *dest, const void *src, size_t n);

@@ -21,7 +21,8 @@ static void	*malloc_internal(const size_t size)
 
 	if (!block)
 		return (NULL);
-	
+
+	block->free = 0;
 	if (type != LARGE)
 		split_block(block, size);
 	block->free = 0;

@@ -1,5 +1,6 @@
 #include <unistd.h>
 #include <sys/mman.h>
+#include <stdint.h>
 
 #include "../include/alloc.h"
 
@@ -38,4 +39,28 @@ t_zone	*create_new_zone(const t_zone_type type, const size_t size)
 	push_zone(mem);
 
 	return (mem);
+}
+
+/**
+ * @brief Search in wich zone the ptr is
+ * @param ptr Pointer to a payload
+ * @return Corresponding zone pointer if found
+ * NULL otherwise
+ */
+t_zone	*find_zone_from_payload_ptr(const void *ptr)
+{
+	const uintptr_t	payload_addr = (uintptr_t) ptr;
+	t_zone	*z = *get_zones();
+	uintptr_t		z_end_addr = 0;
+
+	// Iterate zones linked-list, check if the
+	// payload_addr is in the range of a zone
+	while (z)
+	{
+		z_end_addr = (uintptr_t) ( (char *) z + z->size );
+		if (payload_addr > (uintptr_t) z && payload_addr < z_end_addr)
+			return (z);
+		z = z->next;
+	}
+	return (NULL);
 }

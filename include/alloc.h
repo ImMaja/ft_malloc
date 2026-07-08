@@ -81,6 +81,7 @@ int			normalize_size(size_t *size);
 
 /** zone.c */
 t_zone		*create_new_zone(const t_zone_type type, const size_t size);
+t_zone		*find_zone_from_payload_ptr(const void *ptr);
 
 /** zone_utils.c */
 t_zone_type	get_zone_type_by_size(const size_t size);
@@ -89,11 +90,12 @@ void		push_zone(t_zone *new_zone);
 
 /** block.c */
 void		create_default_block(t_zone *zone, const size_t size);
+t_block		*find_free_block(const t_zone_type type, const size_t size);
 void		split_block(t_block *block, const size_t size);
+t_block		*find_block_from_payload_ptr(const t_zone *zone, const void *payload_ptr);
 
 /** block_utils.c */
-t_block		*find_free_block(const t_zone_type type, const size_t size);
-void		merge_free_blocks(t_block *free_block);
+
 
 /** utils/ */
 void		*ft_memcpy(void *dest, const void *src, size_t n);

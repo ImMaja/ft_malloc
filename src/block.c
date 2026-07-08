@@ -1,4 +1,9 @@
+#include <stdint.h>
+
 #include "../include/alloc.h"
+
+static void	merge_free_blocks(t_block *block);
+
 
 /**
  * @brief Create a default block in a new zone
@@ -23,6 +28,39 @@ void	create_default_block(t_zone *zone, const size_t size)
 
 	zone->blocks = block;
 }
+
+
+/**
+ * @brief Search a free block of at least 'size' size and
+ * of corresponding zone type
+ * @param type Type of the zone
+ * @param size Minimal size block
+ * @return Pointer to the first corrsponding block,
+ * NULL is no block was found
+ */
+t_block	*find_free_block(const t_zone_type type, const size_t size)
+{
+	t_zone	*zone;
+	t_block	*block;
+
+	zone = *get_zones();
+	while (zone)
+	{
+		if (zone->type == type)
+		{
+			block = zone->blocks;
+			while (block)
+			{
+				if (block->free && block->payload_size >= size)
+					return (block);
+				block = block->next;
+			}
+		}
+		zone = zone->next;
+	}
+	return (NULL);
+}
+
 
 /**
  * @brief Split 'block' with new size if possible,
@@ -57,4 +95,65 @@ void	split_block(t_block *block, const size_t size)
 	block->next = new_next;
 
 	merge_free_blocks(new_next);
+}
+
+
+/**
+ * @brief Merge consecutive free blocks near 'free_block'
+ * @param free_block Pointer to a free block
+ */
+static void	merge_free_blocks(t_block *block)
+{
+	if (!block || !block->free)
+		return ;
+
+	// Find first free block
+	while (block->prev && block->prev->free)
+		block = block->prev;
+
+	while (block->next && block->next->free)
+	{
+		block->payload_size += BLOCK_HEADER_SIZE + block->next->payload_size;
+		if (block->next->next)
+			block->next->next->prev = block;
+		block->next = block->next->next;
+	}
+}
+
+/**
+ * @brief Find the block of the given 'payload_ptr' in the zone 'zone'
+ * If 'payload_ptr' is not a valid payload ptr given by malloc,
+ * this function will return NULL
+ * @param zone The zone of the 'payload_ptr' block
+ * @param payload_ptr The payload ptr of a block
+ * @return Block ptr if 'ptr' is valid, NULL otherwise
+ */
+t_block	*find_block_from_payload_ptr(const t_zone *zone, const void *payload_ptr)
+{
+	uintptr_t	payload_addr;
+	uintptr_t	block_addr;
+	t_block		*b;
+
+	if (!zone || !payload_ptr)
+		return (NULL);
+
+	payload_addr = (uintptr_t) payload_ptr;
+	if (payload_addr < (uintptr_t) zone + BLOCK_HEADER_SIZE)
+		return (NULL);
+
+	block_addr = payload_addr - BLOCK_HEADER_SIZE;
+
+	if (block_addr < (uintptr_t) zone)
+		return (NULL);
+	if ( block_addr >= (uintptr_t) ( (char *) zone + zone->size ) )
+		return (NULL);
+
+	b = zone->blocks;
+	while (b)
+	{
+		if ( (uintptr_t) b == block_addr )
+			return (b);
+		b = b->next;
+	}
+	return (NULL);
 }

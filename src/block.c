@@ -77,7 +77,7 @@ void	split_block(t_block *block, const size_t size)
 		return ;
 	if (size >= block->payload_size)
 		return ;
-	if (block->payload_size - size < MIN_SPLIT_SIZE)
+	if (block->payload_size - size < MIN_BLOCK_SIZE)
 		return ;
 
 	old_next = block->next;
@@ -118,6 +118,75 @@ static void	merge_free_blocks(t_block *block)
 			block->next->next->prev = block;
 		block->next = block->next->next;
 	}
+}
+
+
+/**
+ * @brief Try to grow an existing block using the next free block.
+ * If enough memory remains, create a new free block.
+ * Otherwise, consume the whole next free block.
+ * @param block The block to grow.
+ * @param new_size The requested aligned new payload size.
+ * @return 0 on success, 1 on failure.
+ */
+int	inplace_grow(t_block *block, const size_t new_size)
+{
+	size_t	diff_size = 0;
+	size_t	free_total_size = 0;
+	size_t	remaining_size = 0;
+	t_block	*old_next = NULL;
+	t_block	*old_next_next = NULL;
+	t_block	*new_next = NULL;
+
+	// Check if next block exist and is free
+	if (!block || !block->next || !block->next->free)
+		return (1);
+	// Check if new_size is actuallt bigger then current payload_size
+	if (new_size <= block->payload_size)
+		return (1);
+
+	old_next = block->next;
+	old_next_next = old_next->next;
+
+	diff_size = new_size - block->payload_size;
+	free_total_size = BLOCK_HEADER_SIZE + old_next->payload_size;
+
+	// Check if next block is big enough to grow this one
+	if (free_total_size < diff_size)
+		return (1);
+
+	// At this point we can grow the block
+
+	remaining_size = free_total_size - diff_size;
+
+	// Check if we can create a new free block with remaining memory
+	if (remaining_size >= MIN_BLOCK_SIZE)
+	{
+		new_next = (t_block *) ( (char *) block + BLOCK_HEADER_SIZE + new_size );
+
+		new_next->payload_size = remaining_size - BLOCK_HEADER_SIZE;
+		new_next->free = 1;
+		new_next->prev = block;
+		new_next->next = old_next_next;
+
+		if (old_next_next)
+			old_next_next->prev = new_next;
+
+		block->payload_size = new_size;
+		block->next = new_next;
+
+		return (0);
+	}
+
+	// We cannot create a free block with remaining memory,
+	// so we consume the whole free block
+
+	block->payload_size += free_total_size;
+	block->next = old_next_next;
+	if (old_next_next)
+		old_next_next->prev = block;
+
+	return (0);
 }
 
 /**

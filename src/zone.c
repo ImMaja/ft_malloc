@@ -33,7 +33,7 @@ t_zone	*create_new_zone(const t_zone_type type, const size_t size)
 	mem->prev = NULL;
 
 	// Initialize a default block for the new zone
-	create_default_block(mem, size);
+	create_default_block(mem, zone_length - ZONE_HEADER_SIZE - BLOCK_HEADER_SIZE);
 
 	// Push the new zone in zones linked-list
 	push_zone(mem);

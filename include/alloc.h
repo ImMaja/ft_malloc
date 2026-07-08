@@ -19,11 +19,8 @@
 /** Min payload size */
 # define MIN_PAYLOAD_SIZE 16
 
-/**
- * Define the minimal requiered size to split a block
- * Used when the size of a realloc is smaller then the block_size
-*/
-# define MIN_SPLIT_SIZE (BLOCK_HEADER_SIZE + MIN_PAYLOAD_SIZE)
+/** Define the minimal requiered size for a block */
+# define MIN_BLOCK_SIZE (BLOCK_HEADER_SIZE + MIN_PAYLOAD_SIZE)
 
 /** Define min number of blocks for TINY and SMALL zones */
 # define ZONE_ALLOC_COUNT 100
@@ -93,6 +90,7 @@ void		create_default_block(t_zone *zone, const size_t size);
 t_block		*find_free_block(const t_zone_type type, const size_t size);
 void		split_block(t_block *block, const size_t size);
 t_block		*find_block_from_payload_ptr(const t_zone *zone, const void *payload_ptr);
+int			inplace_grow(t_block *block, const size_t new_size);
 
 /** block_utils.c */
 

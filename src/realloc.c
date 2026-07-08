@@ -1,6 +1,9 @@
 #include "../include/alloc.h"
 
 static void	*realloc_internal(void *ptr, const size_t size, t_zone *zone, t_block *block);
+static void	*shrink_realloc_internal(void *ptr, const size_t size, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type);
+static void	*grow_realloc_internal(void *ptr, const size_t size, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type);
+static void	*new_block_realloc(void *ptr, const size_t new_size, const size_t original_size);
 
 
 void	*realloc(void *ptr, size_t size)
@@ -45,39 +48,104 @@ static void	*realloc_internal(void *ptr, const size_t size, t_zone *zone, t_bloc
 {
 	t_zone_type	old_zone_type = zone->type;
 	t_zone_type	new_zone_type = get_zone_type_by_size(size);
-	void		*new_ptr = NULL;
 
-	// Shrink cases,
-	// new size is smaller then current payload_size
+	// Shrink reallocation
 	if (size < block->payload_size)
 	{
-		// Difference is not enought for a free block, no changes
-		if (block->payload_size - size < MIN_SPLIT_SIZE)
-			return (ptr);
-
-		// ICI GERER LE CAS DU MALLOC LARGE QUI DOIT MUNMAP DES PAGES
-
-		split_block(block, size);
-		return (ptr);
+		return (shrink_realloc_internal(ptr, size, block, old_zone_type, new_zone_type));
 	}
+	// Grow reallocation
+	return (grow_realloc_internal(ptr, size, block, old_zone_type, new_zone_type));
+}
 
-	// Grow cases
-	// New size is bigger then current payload_size
 
-	// If new size upgrade the allocation type
-	if (new_zone_type > old_zone_type)
+/**
+ * @brief Perform a shrink reallocation
+ * (new requested payload is smaller then current payload size)
+ * For TINY/SMALL reallocation:
+ *     Block stay in the same zone
+ *     Create a free block with remaining memory if possible
+ *     Return same ptr
+ * For LARGE reallocation:
+ *     LARGE -> LARGE: munmap useless pages of zone if any
+ *     LARGE -> TINY/SMALL: reallocate in corresponding zone
+ * @param ptr Pointer to current payload
+ * @param size New requested and aligned size of the payload
+ * @param block Pointer to the block of the payload
+ * @param old_zone_type Type of the current allocation
+ * @param new_zone_type Type of the new reallocation
+ */
+static void	*shrink_realloc_internal(void *ptr, const size_t size, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type)
+{
+	// Current block is a LARGE allocation
+	if (old_zone_type == LARGE)
 	{
-		new_ptr = malloc(size);
-		if (!new_ptr)
-			return (NULL);
-		ft_memcpy(new_ptr, ptr, block->payload_size);
-		free(ptr);
-		return (new_ptr);
+		// LARGE to LARGE
+		
+		// LARGE to TINY/SMALL
+		if (new_zone_type == TINY || new_zone_type == SMALL)
+			return (new_block_realloc(ptr, size, size));
+	}
+	// Current block is a TINY/SMALL allocation
+
+	// If remaining memory is not enough to create a free block
+	// Return the same ptr
+	if (block->payload_size - size < MIN_BLOCK_SIZE)
+		return (ptr);
+
+	// Shrink the block and create a new free block
+	// Return the same ptr
+	split_block(block, size);
+	return (ptr);
+}
+
+
+/**
+ * @brief Perform a grow reallocation
+ * (new requested payload is bigger then current payload size)
+ * Try to extend current block if possible or create a new one
+ * @param ptr Pointer to current payload
+ * @param size New requested and aligned size of the payload
+ * @param block Pointer to the block of the payload
+ * @param old_zone_type Type of the current allocation
+ * @param new_zone_type Type of the new reallocation
+ */
+static void	*grow_realloc_internal(void *ptr, const size_t size, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type)
+{
+	// New size does not upgrade the allocation type
+	if (new_zone_type == old_zone_type)
+	{
+		// Try an in-place grow
+		// Return same ptr if success
+		if (inplace_grow(block, size) == 0)
+			return (ptr);
 	}
 
-	// New size does not upgrade the allocation type
+	// New size does upgrade the allocation type
+	// or grow in-place failed
+	// Return new ptr
+	return (new_block_realloc(ptr, size, block->payload_size));
+}
 
-	// Ici agrandir le block
-	// si pas possible, malloc, memcpy et free
 
+/**
+ * @brief Use malloc to allocate a new block,
+ * then copy using ft_memcpy from previous ptr to new ptr
+ * and free previous block
+ * @param ptr Original payload pointer
+ * @param new_size Aligned size of the reallocation
+ * @param copy_size The copy size
+ * @return In case of malloc failure, return NULL and does not deallocate block
+ * Return new pointer otherwise
+ */
+static void	*new_block_realloc(void *ptr, const size_t new_size, const size_t copy_size)
+{
+	void	*new_ptr = malloc(new_size);
+
+	if (!new_ptr)
+		return (NULL);
+
+	ft_memcpy(new_ptr, ptr, copy_size);
+	free(ptr);
+	return (new_ptr);
 }

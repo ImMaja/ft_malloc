@@ -13,7 +13,6 @@ void	*malloc(size_t size)
 	return (malloc_internal(size));
 }
 
-
 static void	*malloc_internal(const size_t size)
 {
 	t_zone_type	type = get_zone_type_by_size(size);
@@ -23,9 +22,7 @@ static void	*malloc_internal(const size_t size)
 		return (NULL);
 
 	block->free = 0;
-	if (type != LARGE)
-		split_block(block, size);
-	block->free = 0;
+	split_block(block, size);
 
 	return (get_payload_addr(block));
 }

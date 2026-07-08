@@ -4,15 +4,16 @@
 #include "../include/alloc.h"
 
 /**
- * @brief Allocate a new zone with mmap and push it in zones linked-list
- * @param type Zine type, TINY, SMALL or LARGE
- * @param size Aligned payload size
+ * @brief Allocate a new zone with mmap and add it in corresponding heap linked-list
+ * @param type TINY, SMALL or LARGE -> Zone type
+ * @param size Aligned requested payload
  * @return ptr to the new zone on success, NULL on error
  */
 t_zone	*create_new_zone(const t_zone_type type, const size_t size)
 {
+	t_zone	**heap_zone = get_zone_ptr_by_type(type);
 	size_t	zone_length;
-	t_zone	*mem;
+	void	*mem;
 
 	zone_length = calculate_zone_length(type, size);
 	if (zone_length == 0)
@@ -25,17 +26,14 @@ t_zone	*create_new_zone(const t_zone_type type, const size_t size)
 		return (NULL);
 
 	// Initialize new zone header
-	mem->type = type;
-	mem->size = zone_length;
-	mem->blocks = NULL;
-	mem->next = NULL;
-	mem->prev = NULL;
+	init_zone_header((t_zone *) mem, type, zone_length);
 
 	// Initialize a default block for the new zone
-	create_default_block(mem, size);
+	create_default_block((t_zone *) mem);
 
-	// Push the new zone in zones linked-list
-	push_zone(mem);
+	// Push the new zone in corresponding linked-list
+	push_new_zone_in_linked_list(heap_zone, (t_zone *) mem);
 
-	return (mem);
+	return ((t_zone *) mem);
 }
+

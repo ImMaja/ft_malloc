@@ -25,8 +25,7 @@ SRCS = $(SRCS_DIR)malloc.c \
 	$(SRCS_DIR)realloc.c \
 	$(SRCS_DIR)free.c \
 	$(SRCS_DIR)show_alloc_mem.c \
-	$(SRCS_DIR)allocator.c \
-	$(SRCS_DIR)align.c \
+	$(SRCS_DIR)heap.c \
 	$(SRCS_DIR)zone.c \
 	$(SRCS_DIR)zone_utils.c \
 	$(SRCS_DIR)block.c \

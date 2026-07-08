@@ -1,78 +1,57 @@
-#include <unistd.h>
-
 #include "../include/alloc.h"
+
+static size_t	align_page(const size_t size);
 
 
 /**
  * @brief Retrieve an allocation type by its size
- * @param size The size of the allocation
- * @return The corresponding type
+ * @param size The aligned size of the allocation
+ * @return The corresponding type (TINY, SMALL or LARGE)
  */
 t_zone_type	get_zone_type_by_size(const size_t size)
 {
 	if (size > SMALL_BLOCK_SIZE)
-		return(LARGE);
+		return (LARGE);
 	else if (size > TINY_BLOCK_SIZE && size < SMALL_BLOCK_SIZE)
-		return(SMALL);
-	return(TINY);
+		return (SMALL);
+	return (TINY);
 }
 
 
 /**
- * @brief Iterate on a linked-list of zone
- * Can be a linked-list of either TINY, SMALL or LARGE zones
- * @param heap_zone Linked-list of zones
- * @param new_zone New node to insert in heap_zone
+ * @brief Push the 'new_zone' in the zones linked-list of the alloc struct
+ * @param new_zone The new zone to push
  */
-void	push_new_zone_in_linked_list(t_zone **heap_zone, t_zone *new_zone)
+void	push_zone(t_zone *new_zone)
 {
-	t_zone	*iter;
-	// Should nerver happend
-	if (!heap_zone)
+	t_zone	**zones = get_zones();
+	t_zone	*last;
+
+	if (!new_zone)
 		return ;
-	
-	if (!*heap_zone)
+
+	if (*zones == NULL)
 	{
-		*heap_zone = new_zone;
+		*zones = new_zone;
+		new_zone->prev = NULL;
+		new_zone->next = NULL;
 		return ;
 	}
 
-	iter = *heap_zone;
-	while (iter->next)
-		iter = iter->next;
+	last = *zones;
+	while (last->next)
+		last = last->next;
 
-	new_zone->prev = iter;
-	iter->next =new_zone;
-}
-
-
-/**
- * @brief Align the zone size on a page multiple (most of the time 4096)
- * ex: size = 16048, return 16384
- * @param size The raw size of a zone
- * @return Aligned size
- */
-static size_t	align_page(const size_t size)
-{
-	long	page_size = sysconf(_SC_PAGESIZE);
-	size_t	rem;
-
-	// Check for errors
-	if (page_size <= 0)
-		return (0);
-	
-	rem = size % (size_t) page_size;
-	if (rem == 0)
-		return (size);
-	return ( size + ((size_t) page_size - rem) );
+	last->next = new_zone;
+	new_zone->prev = last;
 }
 
 
 /**
  * @brief Calculate the length for a new zone (mmap allocation)
  * The length is aligned on page multiple
- * @param type The type (TINY, SMALL or LARGE) of the new heap zone
- * @param size The size parameter of malloc (used only for LARGE)
+ * @param type The type (TINY, SMALL or LARGE) of the new zone
+ * @param size The aligned size for LARGE allocation
  * @return mmap length
  */
 size_t	calculate_zone_length(const t_zone_type type, const size_t size)
@@ -97,16 +76,21 @@ size_t	calculate_zone_length(const t_zone_type type, const size_t size)
 
 
 /**
- * @brief Initialize zone headers with default value
- * @param mem The new zone
- * @param type Type of the zone (TINY, SMALL or LARGE)
- * @param size The full length of the zone
+ * @brief Align the zone size on a page multiple (most of the time 4096)
+ * ex: size = 16048, return 16384
+ * @param size The raw size of a zone
+ * @return Aligned size
  */
-void	init_zone_header(t_zone *mem, const t_zone_type type, const size_t size)
+static size_t	align_page(const size_t size)
 {
-	mem->type = type;
-	mem->size = size;
-	mem->blocks = NULL;
-	mem->next = NULL;
-	mem->prev = NULL;
+	size_t	page_size = get_page_size();
+	size_t	rem;
+
+	if (page_size == 0)
+		return (0);
+	
+	rem = size % page_size;
+	if (rem == 0)
+		return (size);
+	return ( size + (page_size - rem) );
 }

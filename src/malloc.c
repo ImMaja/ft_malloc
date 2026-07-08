@@ -1,48 +1,66 @@
-#include <unistd.h>
-
-#include "../ft_printf/ft_printf.h"
 #include "../include/alloc.h"
+
+static void		*malloc_internal(const size_t size);
+static t_block	*get_free_block_for_alloc(const t_zone_type type, const size_t size);
+static void		*get_payload_addr(t_block *block);
 
 
 void	*malloc(size_t size)
 {
-	ft_printf("malloc called with size %u -------------------------\n", size);
+	if (normalize_size(&size) == -1)
+		return (NULL);
 
+	return (malloc_internal(size));
+}
+
+
+static void	*malloc_internal(const size_t size)
+{
 	t_zone_type	type = get_zone_type_by_size(size);
-	t_zone		*zone = NULL;
-	t_block		*split = NULL;
+	t_block		*block = get_free_block_for_alloc(type, size);
 
-	// Align size to 16, ex: 1000 -> 1008
-	size = ALIGN_UP(size);
+	if (!block)
+		return (NULL);
+	
+	if (type != LARGE)
+		split_block(block, size);
+	block->free = 0;
 
-	// New alloc is a LARGE allocation
-	// Create a zone and a default block for the alloc
-	if (type == LARGE)
+	return (get_payload_addr(block));
+}
+
+
+/**
+ * @brief Retrieve a free block for the new allocation
+ * If there is no free block of the corresponding type,
+ * we create a new zone with default block
+ * @param type The type of the allocation (TINY, SMALL or LARGE)
+ * @param size The aligned size of the allocation
+ * @return Block pointer
+ */
+static t_block	*get_free_block_for_alloc(const t_zone_type type, const size_t size)
+{
+	t_zone	*zone = NULL;
+	t_block	*block = NULL;
+
+	if (type != LARGE)
 	{
-		t_zone	*zone = create_new_zone(type, size);
-		if (!zone)
-			return (NULL);
-		
-		split = (t_block *) ( (char *) zone + ZONE_HEADER_SIZE );
-		split_block(split, size);
-		return ( (char *) split + BLOCK_HEADER_SIZE );
+		block = find_free_block(type, size);
+		if (block)
+			return (block);
 	}
-	// New alloc is a TINY or SMALL allocation
-	// Try to find an available block for the allocation
-	// If no available block, create a new zone and a default block
-	zone = *get_zone_ptr_by_type(type);
-	split = find_available_block(zone, size);
-	if (!split)
-	{
-		zone = create_new_zone(type, size);
-		if (!zone)
-			return (NULL);
-		split = (t_block *) ( (char *) zone + ZONE_HEADER_SIZE );
-	}
+	zone = create_new_zone(type, size);
+	if (!zone)
+		return (NULL);
+	return (zone->blocks);
+}
 
-	// Split available block for the new allocation
-	split_block(split, size);
-
-	return ( (char *) split + BLOCK_HEADER_SIZE );
-
+/**
+ * @brief Return payload address of a block
+ * @param block Pointer to the beginning of the block
+ * @return payload address of the block
+ */
+static void	*get_payload_addr(t_block *block)
+{
+	return ( (void *) ( (char *) block + BLOCK_HEADER_SIZE ));
 }

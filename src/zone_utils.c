@@ -12,7 +12,7 @@ t_zone_type	get_zone_type_by_size(const size_t size)
 {
 	if (size > SMALL_BLOCK_SIZE)
 		return (LARGE);
-	else if (size > TINY_BLOCK_SIZE && size < SMALL_BLOCK_SIZE)
+	else if (size > TINY_BLOCK_SIZE && size <= SMALL_BLOCK_SIZE)
 		return (SMALL);
 	return (TINY);
 }

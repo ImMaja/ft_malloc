@@ -15,7 +15,7 @@ t_zone	*create_new_zone(const t_zone_type type, const size_t size)
 	size_t	zone_length;
 	t_zone	*mem;
 
-	zone_length = calculate_zone_length(type, size);
+	zone_length = calculate_zone_size(type, size);
 	if (zone_length == 0)
 		return (NULL);
 
@@ -75,40 +75,59 @@ t_zone	*find_zone_from_payload_ptr(const void *ptr)
 
 /**
  * @brief Reduce the size of a large zone. Shrinked memory is munmaped
- * @param zone The zone to shrink
+ * @param zone The LARGE zone to shrink
  * @param new_zone_size The new size for the zone
- * @return 0 on success, < 0 || > 0 on error
+ * @return 0 on success, != 0 on error
  */
-int	reduce_large_zone_size(t_zone *zone, const size_t new_zone_size)
+int	reduce_large_zone_size(t_zone *zone, const size_t realloc_size, const size_t new_zone_size)
 {
-	void	*to_munmap = (void *) ( (char *) zone + new_zone_size );
-	t_block	*last_block = find_last_block(zone);
-	size_t	size_diff = 0;
+	void	*cut = NULL;
+	size_t	munmap_size = 0;
+	size_t	remaining = 0;
 	int		munmap_ret = -1;
+	t_block	*free_block = NULL;
 
 	// If this fail, we are so fucked
-	if (!zone || !zone->blocks || !zone->blocks->next)
+	if (!zone || zone->type != LARGE || !zone->blocks)
 		return (1);
 	if (new_zone_size >= zone->size)
 		return (1);
+	if (new_zone_size < ZONE_HEADER_SIZE + BLOCK_HEADER_SIZE + realloc_size)
+		return (1);
 
-	// Difference between current zone size and new zone size
-	size_diff = zone->size - new_zone_size;
+	cut = (void *) ( (char *) zone + new_zone_size );
+	munmap_size = zone->size - new_zone_size;
+	remaining = new_zone_size - ZONE_HEADER_SIZE - BLOCK_HEADER_SIZE - realloc_size;
 
-	// Shrink zone size with diff size
-	zone->size -= size_diff;
+	// Munmap useless pages
+	munmap_ret = munmap(cut, munmap_size);
+	if (munmap_ret != 0)
+		return (munmap_ret);
 
-	// Check if there is anough memory for the free block after munmap
-	// if not, ajust block payload_size
-	if ( zone->size - (ZONE_HEADER_SIZE + BLOCK_HEADER_SIZE + zone->blocks->payload_size) < MIN_BLOCK_SIZE)
+	// At this point, munmap was successfull
+
+	// Shrink block to the new realloc size
+	zone->blocks->payload_size = realloc_size;
+
+	zone->size = new_zone_size;
+
+	// Enough remaining memory for a free block
+	if (remaining >= MIN_BLOCK_SIZE)
 	{
-		zone->blocks->payload_size = zone->size - ZONE_HEADER_SIZE - BLOCK_HEADER_SIZE;
-		zone->blocks->next = NULL;
+		free_block = (t_block *) ( (char *) zone + ZONE_HEADER_SIZE + BLOCK_HEADER_SIZE + zone->blocks->payload_size );
+		free_block->free = 1;
+		free_block->payload_size = remaining - BLOCK_HEADER_SIZE;
+		free_block->next = NULL;
+		free_block->prev = zone->blocks;
+
+		zone->blocks->next = free_block;
 	}
+	// Not enough remaining memory for a free block
 	else
-		
+	{
+		zone->blocks->next = NULL;
+		zone->blocks->payload_size = zone->size - ZONE_HEADER_SIZE - BLOCK_HEADER_SIZE;
+	}
 
-	munmap_ret = munmap(to_munmap, size_diff);
-
-	return (munmap_ret);
+	return (0);
 }

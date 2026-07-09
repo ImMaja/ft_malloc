@@ -79,7 +79,7 @@ int			normalize_size(size_t *size);
 /** zone.c */
 t_zone		*create_new_zone(const t_zone_type type, const size_t size);
 t_zone		*find_zone_from_payload_ptr(const void *ptr);
-int			reduce_large_zone_size(t_zone *zone, const size_t new_zone_size);
+int			reduce_large_zone_size(t_zone *zone, const size_t realloc_size, const size_t new_zone_size);
 
 /** zone_utils.c */
 t_zone_type	get_zone_type_by_size(const size_t size);

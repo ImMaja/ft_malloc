@@ -88,16 +88,20 @@ static void	*shrink_realloc_internal(void *ptr, const size_t size, t_zone *zone,
 			// Calculate new size of the zone
 			new_zone_size = calculate_zone_size(LARGE, size);
 
-			// Shrink block
-			split_block(block, size);
-
 			// Realloc does not reduce zone size
 			if (new_zone_size == zone->size)
+			{
+				split_block(block, size);
 				return (ptr);
+			}
 
-			// Realloc reduce zone size, munmap useless pages
-			// If munmap fail, fallback to new_block_realloc, if it also fail, return NULL
-			
+			// Realloc does reduce zone size, try to delete useless pages
+			// If somethings fails, fallback to new_block_realloc
+			if (reduce_large_zone_size(zone, size, new_zone_size) != 0)
+				return (new_block_realloc(ptr, size, size));
+
+			// Successfull shrink of a LARGE -> LARGE
+			return (ptr);
 		}
 
 		// LARGE to TINY/SMALL

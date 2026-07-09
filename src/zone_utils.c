@@ -48,13 +48,13 @@ void	push_zone(t_zone *new_zone)
 
 
 /**
- * @brief Calculate the length for a new zone (mmap allocation)
- * The length is aligned on page multiple
+ * @brief Calculate the size for a new zone (mmap allocation)
+ * The size is aligned on page multiple
  * @param type The type (TINY, SMALL or LARGE) of the new zone
  * @param size The aligned size for LARGE allocation
- * @return mmap length
+ * @return mmap size
  */
-size_t	calculate_zone_length(const t_zone_type type, const size_t size)
+size_t	calculate_zone_size(const t_zone_type type, const size_t size)
 {
 	size_t	raw_size;
 

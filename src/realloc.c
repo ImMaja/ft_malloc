@@ -1,7 +1,7 @@
 #include "../include/alloc.h"
 
 static void	*realloc_internal(void *ptr, const size_t size, t_zone *zone, t_block *block);
-static void	*shrink_realloc_internal(void *ptr, const size_t size, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type);
+static void	*shrink_realloc_internal(void *ptr, const size_t size, t_zone *zone, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type);
 static void	*grow_realloc_internal(void *ptr, const size_t size, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type);
 static void	*new_block_realloc(void *ptr, const size_t new_size, const size_t original_size);
 
@@ -52,7 +52,7 @@ static void	*realloc_internal(void *ptr, const size_t size, t_zone *zone, t_bloc
 	// Shrink reallocation
 	if (size < block->payload_size)
 	{
-		return (shrink_realloc_internal(ptr, size, block, old_zone_type, new_zone_type));
+		return (shrink_realloc_internal(ptr, size, zone, block, old_zone_type, new_zone_type));
 	}
 	// Grow reallocation
 	return (grow_realloc_internal(ptr, size, block, old_zone_type, new_zone_type));
@@ -75,15 +75,33 @@ static void	*realloc_internal(void *ptr, const size_t size, t_zone *zone, t_bloc
  * @param old_zone_type Type of the current allocation
  * @param new_zone_type Type of the new reallocation
  */
-static void	*shrink_realloc_internal(void *ptr, const size_t size, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type)
+static void	*shrink_realloc_internal(void *ptr, const size_t size, t_zone *zone, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type)
 {
+	size_t	new_zone_size = 0;
+
 	// Current block is a LARGE allocation
 	if (old_zone_type == LARGE)
 	{
 		// LARGE to LARGE
-		
+		if (new_zone_type == LARGE)
+		{
+			// Calculate new size of the zone
+			new_zone_size = calculate_zone_size(LARGE, size);
+
+			// Shrink block
+			split_block(block, size);
+
+			// Realloc does not reduce zone size
+			if (new_zone_size == zone->size)
+				return (ptr);
+
+			// Realloc reduce zone size, munmap useless pages
+			// If munmap fail, fallback to new_block_realloc, if it also fail, return NULL
+			
+		}
+
 		// LARGE to TINY/SMALL
-		if (new_zone_type == TINY || new_zone_type == SMALL)
+		else
 			return (new_block_realloc(ptr, size, size));
 	}
 	// Current block is a TINY/SMALL allocation

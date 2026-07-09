@@ -9,7 +9,7 @@ int	main(void)
 {
 	void *ptr = malloc(5120);
 
-	ptr = realloc(ptr, 6000);
+	ptr = realloc(ptr, 13);
 
 	(void) ptr;
 

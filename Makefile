@@ -30,7 +30,6 @@ SRCS = $(SRCS_DIR)malloc.c \
 	$(SRCS_DIR)zone.c \
 	$(SRCS_DIR)zone_utils.c \
 	$(SRCS_DIR)block.c \
-	$(SRCS_DIR)block_utils.c \
 	$(SRCS_DIR)utils/ft_memcpy.c \
 
 TEST_SRCS = $(TESTS_DIR)test.c

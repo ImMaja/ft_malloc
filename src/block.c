@@ -9,24 +9,29 @@ static void	merge_free_blocks(t_block *block);
  * @brief Create a default block in a new zone
  * Default blok will use all available memory in the zone
  * @param zone The zone who need a default block
+ * @return 0 on succes, 1 otherwise
  */
-void	create_default_block(t_zone *zone, const size_t size)
+int	create_default_block(t_zone *zone)
 {
 	t_block	*block;
+	size_t	block_size = 0;
 
 	if (!zone)
-		return ;
+		return (1);
+	if (zone->size < ZONE_HEADER_SIZE + BLOCK_HEADER_SIZE + MIN_PAYLOAD_SIZE)
+		return (1);
+
+	block_size = zone->size - ZONE_HEADER_SIZE - BLOCK_HEADER_SIZE;
 
 	block = (t_block *) ( (char *) zone + ZONE_HEADER_SIZE );
-	if (zone->type == LARGE)
-		block->payload_size = size;
-	else
-		block->payload_size = zone->size - ZONE_HEADER_SIZE - BLOCK_HEADER_SIZE;
+	block->payload_size = block_size;
 	block->free = 1;
 	block->next = NULL;
 	block->prev = NULL;
 
 	zone->blocks = block;
+
+	return (0);
 }
 
 
@@ -188,6 +193,7 @@ int	inplace_grow(t_block *block, const size_t new_size)
 
 	return (0);
 }
+
 
 /**
  * @brief Find the block of the given 'payload_ptr' in the zone 'zone'

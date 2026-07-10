@@ -13,10 +13,6 @@ LDFLAGS = -shared
 
 SRCS_DIR = src/
 OBJS_DIR = objs/
-TESTS_DIR = test/
-TEST_OBJS_DIR = $(TESTS_DIR)objs/
-
-TEST_NAME = test_malloc
 
 SRCS = $(SRCS_DIR)alloc/malloc.c \
 	$(SRCS_DIR)alloc/realloc.c \
@@ -31,15 +27,11 @@ SRCS = $(SRCS_DIR)alloc/malloc.c \
 	$(SRCS_DIR)block_utils.c \
 	$(SRCS_DIR)utils/ft_memcpy.c \
 	$(SRCS_DIR)utils/ft_memset.c \
-	$(SRCS_DIR)utils/print_utils.c \
-
-TEST_SRCS = $(TESTS_DIR)test.c
+	$(SRCS_DIR)utils/print_utils.c
 
 OBJS = $(patsubst $(SRCS_DIR)%.c,$(OBJS_DIR)%.o,$(SRCS))
-TEST_OBJS = $(patsubst $(TESTS_DIR)%.c,$(TEST_OBJS_DIR)%.o,$(TEST_SRCS))
 
 DEPS = $(OBJS:.o=.d)
-TEST_DEPS = $(TEST_OBJS:.o=.d)
 
 all: $(NAME) $(LINK)
 
@@ -50,30 +42,19 @@ $(NAME): $(OBJS)
 $(LINK): $(NAME)
 	@ln -sf $(NAME) $(LINK)
 
-test: $(TEST_NAME)
-
-$(TEST_NAME): $(TEST_OBJS) $(OBJS)
-	@echo "Linking $@"
-	@$(CC) $(CFLAGS) -o $@ $(TEST_OBJS) $(OBJS)
-
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.c
 	@mkdir -p $(@D)
 	@echo "Compiling $<"
 	@$(CC) $(CFLAGS) $(INCLUDES) $(DEPFLAGS) -o $@ -c $<
 
-$(TEST_OBJS_DIR)%.o: $(TESTS_DIR)%.c
-	@mkdir -p $(@D)
-	@echo "Compiling $<"
-	@$(CC) $(CFLAGS) $(INCLUDES) $(DEPFLAGS) -o $@ -c $<
-
 clean:
-	@rm -rf $(OBJS_DIR) $(TEST_OBJS_DIR)
+	@rm -rf $(OBJS_DIR)
 
 fclean: clean
-	@rm -f $(NAME) $(LINK) $(TEST_NAME)
+	@rm -f $(NAME) $(LINK)
 
 re: fclean all
 
-.PHONY: all clean fclean re test
+.PHONY: all clean fclean re
 
--include $(DEPS) $(TEST_DEPS)
+-include $(DEPS)

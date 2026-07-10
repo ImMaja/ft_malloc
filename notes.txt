@@ -6,4 +6,4 @@ valgrind \
   --track-origins=yes \
   --show-leak-kinds=all \
   --soname-synonyms=somalloc=nouserintercepts \
-  env LD_PRELOAD="$PWD/libft_malloc.so" ./test_malloc
+  env LD_PRELOAD="$PWD/libft_malloc.so" ./a.out

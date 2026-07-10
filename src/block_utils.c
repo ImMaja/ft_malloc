@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#include "../include/alloc.h"
+#include "alloc_internal.h"
 
 /**
  * @brief Search a free block of at least 'size' size

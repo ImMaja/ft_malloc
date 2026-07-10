@@ -1,4 +1,4 @@
-#include "../include/alloc.h"
+#include "alloc_internal.h"
 
 /**
  * @brief Create a default block in a new zone

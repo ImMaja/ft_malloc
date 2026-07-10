@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#include "../include/alloc.h"
+#include "alloc_internal.h"
 
 /**
  * @brief Align size on 16 bytes using ALIGN_UP macro

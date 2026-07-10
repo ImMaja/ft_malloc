@@ -1,12 +1,11 @@
-#include "../../include/alloc.h"
-
-static void	free_internal(t_zone *zone, t_block *block);
+#include "alloc_internal.h"
 
 
-void	free(void *ptr)
+void	free_internal(void *ptr)
 {
-	t_zone		*zone = NULL;
-	t_block		*block = NULL;
+	t_zone	*zone = NULL;
+	t_zone	*other_empty = NULL;
+	t_block	*block = NULL;
 
 	// Not an address from my allocator
 	zone = find_zone_from_payload_ptr(ptr);
@@ -22,12 +21,6 @@ void	free(void *ptr)
 	if (block->free)
 		return ;
 
-	free_internal(zone, block);
-}
-
-static void	free_internal(t_zone *zone, t_block *block)
-{
-	t_zone	*other_empty = NULL;
 
 	// Munmap the zone for LARGE allocation
 	if (zone->type == LARGE)

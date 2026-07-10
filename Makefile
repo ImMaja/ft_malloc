@@ -6,19 +6,23 @@ NAME = libft_malloc_$(HOSTTYPE).so
 LINK = libft_malloc.so
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -fPIC
+CFLAGS = -Wall -Wextra -Werror -fPIC -pthread -fvisibility=hidden
 DEPFLAGS = -MMD -MP
 INCLUDES = -I include
-LDFLAGS = -shared
+LDFLAGS = -shared -pthread
 
 SRCS_DIR = src/
 OBJS_DIR = objs/
 
-SRCS = $(SRCS_DIR)alloc/malloc.c \
-	$(SRCS_DIR)alloc/realloc.c \
-	$(SRCS_DIR)alloc/calloc.c \
-	$(SRCS_DIR)alloc/free.c \
-	$(SRCS_DIR)show_alloc_mem.c \
+SRCS = $(SRCS_DIR)malloc/malloc.c \
+	$(SRCS_DIR)malloc/malloc_internal.c \
+	$(SRCS_DIR)realloc/realloc.c \
+	$(SRCS_DIR)realloc/realloc_internal.c \
+	$(SRCS_DIR)calloc/calloc.c \
+	$(SRCS_DIR)free/free.c \
+	$(SRCS_DIR)free/free_internal.c \
+	$(SRCS_DIR)show_alloc_mem/show_alloc_mem.c \
+	$(SRCS_DIR)show_alloc_mem/show_alloc_mem_internal.c \
 	$(SRCS_DIR)allocator.c \
 	$(SRCS_DIR)align.c \
 	$(SRCS_DIR)zone.c \

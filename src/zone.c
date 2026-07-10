@@ -1,7 +1,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 
-#include "../include/alloc.h"
+#include "alloc_internal.h"
 
 /**
  * @brief Allocate a new zone with mmap and push it in zones linked-list

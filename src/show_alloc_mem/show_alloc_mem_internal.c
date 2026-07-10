@@ -1,7 +1,6 @@
-#include <stdint.h>
 #include <unistd.h>
 
-#include "../include/alloc.h"
+#include "alloc_internal.h"
 
 
 static char		*get_str_type(const t_zone_type type);
@@ -11,10 +10,7 @@ static void		print_block_line(t_block *block);
 static void		print_total(size_t bytes_count, const size_t blocks_count);
 
 
-/**
- * @brief Show all allocated zone in ascending order
- */
-void	show_alloc_mem(void)
+void	show_alloc_mem_internal(void)
 {
 	uintptr_t	last = 0;
 	t_zone		*z = NULL;

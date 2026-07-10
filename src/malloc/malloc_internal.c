@@ -1,19 +1,10 @@
-#include "../../include/alloc.h"
+#include "alloc_internal.h"
 
-static void		*malloc_internal(const size_t size);
 static int		get_free_block_for_alloc(const t_zone_type type, const size_t size, t_zone **out_zone, t_block **out_block);
 static void		*get_payload_addr(t_block *block);
 
 
-void	*malloc(size_t size)
-{
-	if (normalize_size(&size) == -1)
-		return (NULL);
-
-	return (malloc_internal(size));
-}
-
-static void	*malloc_internal(const size_t size)
+void	*malloc_internal(const size_t size)
 {
 	t_zone_type	type = get_zone_type_by_size(size);
 	t_zone		*zone = NULL;

@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-#include "../include/alloc.h"
+#include "alloc_internal.h"
 
 
 /**
@@ -108,9 +108,14 @@ size_t	calculate_zone_size(const t_zone_type type, const size_t size)
  */
 t_zone	*find_zone_from_payload_ptr(const void *ptr)
 {
-	const uintptr_t	payload_addr = (uintptr_t) ptr;
-	t_zone	*z = *get_zones();
-	uintptr_t		z_end_addr = 0;
+	t_zone		*z = *get_zones();
+	uintptr_t	payload_addr = 0;
+	uintptr_t	z_end_addr = 0;
+
+	if (!ptr || !z)
+		return (NULL);
+
+	payload_addr = (uintptr_t) ptr;
 
 	// Iterate zones linked-list, check if the
 	// payload_addr is in the range of a zone

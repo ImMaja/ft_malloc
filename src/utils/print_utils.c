@@ -1,7 +1,7 @@
 #include <stdint.h>
 #include <unistd.h>
 
-#include "../../include/alloc.h"
+#include "alloc_internal.h"
 
 void	put_str(const char *s)
 {

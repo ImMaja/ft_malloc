@@ -1,23 +1,17 @@
-#include "../../include/alloc.h"
+#include "alloc_internal.h"
 
-static void	*realloc_internal(void *ptr, const size_t size, t_zone *zone, t_block *block);
-static void	*shrink_realloc_internal(void *ptr, const size_t size, t_zone *zone, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type);
-static void	*grow_realloc_internal(void *ptr, const size_t size, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type);
+
+static void	*shrink_realloc(void *ptr, const size_t size, t_zone *zone, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type);
+static void	*grow_realloc(void *ptr, const size_t size, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type);
 static void	*new_block_realloc(void *ptr, const size_t new_size, const size_t original_size);
 
 
-void	*realloc(void *ptr, size_t size)
+void	*realloc_internal(void *ptr, const size_t size)
 {
-	t_zone	*zone = NULL;
-	t_block	*block	= NULL;
-
-	if (!ptr)
-		return (malloc(size));
-	if (size == 0)
-	{
-		free(ptr);
-		return (NULL);
-	}
+	t_zone		*zone = NULL;
+	t_block		*block	= NULL;
+	t_zone_type	old_zone_type = 0;
+	t_zone_type	new_zone_type = 0;
 
 	zone = find_zone_from_payload_ptr(ptr);
 	// Not an address from my allocator
@@ -33,29 +27,19 @@ void	*realloc(void *ptr, size_t size)
 	if (block->free)
 		return (NULL);
 
-	if (normalize_size(&size) == -1)
-		return (NULL);
-
 	// Same size as current block size
 	if (size == block->payload_size)
 		return (ptr);
 
-	return (realloc_internal(ptr, size, zone, block));
-}
+	old_zone_type = zone->type;
+	new_zone_type = get_zone_type_by_size(size);
 
-
-static void	*realloc_internal(void *ptr, const size_t size, t_zone *zone, t_block *block)
-{
-	t_zone_type	old_zone_type = zone->type;
-	t_zone_type	new_zone_type = get_zone_type_by_size(size);
 
 	// Shrink reallocation
 	if (size < block->payload_size)
-	{
-		return (shrink_realloc_internal(ptr, size, zone, block, old_zone_type, new_zone_type));
-	}
+		return (shrink_realloc(ptr, size, zone, block, old_zone_type, new_zone_type));
 	// Grow reallocation
-	return (grow_realloc_internal(ptr, size, block, old_zone_type, new_zone_type));
+	return (grow_realloc(ptr, size, block, old_zone_type, new_zone_type));
 }
 
 
@@ -75,7 +59,7 @@ static void	*realloc_internal(void *ptr, const size_t size, t_zone *zone, t_bloc
  * @param old_zone_type Type of the current allocation
  * @param new_zone_type Type of the new reallocation
  */
-static void	*shrink_realloc_internal(void *ptr, const size_t size, t_zone *zone, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type)
+static void	*shrink_realloc(void *ptr, const size_t size, t_zone *zone, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type)
 {
 	size_t	new_zone_size = 0;
 
@@ -134,7 +118,7 @@ static void	*shrink_realloc_internal(void *ptr, const size_t size, t_zone *zone,
  * @param old_zone_type Type of the current allocation
  * @param new_zone_type Type of the new reallocation
  */
-static void	*grow_realloc_internal(void *ptr, const size_t size, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type)
+static void	*grow_realloc(void *ptr, const size_t size, t_block *block, const t_zone_type old_zone_type, const t_zone_type new_zone_type)
 {
 	// New size does not upgrade the allocation type
 	if (new_zone_type == old_zone_type)
@@ -164,12 +148,12 @@ static void	*grow_realloc_internal(void *ptr, const size_t size, t_block *block,
  */
 static void	*new_block_realloc(void *ptr, const size_t new_size, const size_t copy_size)
 {
-	void	*new_ptr = malloc(new_size);
+	void	*new_ptr = malloc_internal(new_size);
 
 	if (!new_ptr)
 		return (NULL);
 
 	ft_memcpy(new_ptr, ptr, copy_size);
-	free(ptr);
+	free_internal(ptr);
 	return (new_ptr);
 }

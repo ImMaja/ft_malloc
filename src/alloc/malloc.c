@@ -1,4 +1,4 @@
-#include "../include/alloc.h"
+#include "../../include/alloc.h"
 
 static void		*malloc_internal(const size_t size);
 static int		get_free_block_for_alloc(const t_zone_type type, const size_t size, t_zone **out_zone, t_block **out_block);

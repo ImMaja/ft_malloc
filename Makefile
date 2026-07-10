@@ -18,9 +18,10 @@ TEST_OBJS_DIR = $(TESTS_DIR)objs/
 
 TEST_NAME = test_malloc
 
-SRCS = $(SRCS_DIR)malloc.c \
-	$(SRCS_DIR)realloc.c \
-	$(SRCS_DIR)free.c \
+SRCS = $(SRCS_DIR)alloc/malloc.c \
+	$(SRCS_DIR)alloc/realloc.c \
+	$(SRCS_DIR)alloc/calloc.c \
+	$(SRCS_DIR)alloc/free.c \
 	$(SRCS_DIR)show_alloc_mem.c \
 	$(SRCS_DIR)allocator.c \
 	$(SRCS_DIR)align.c \
@@ -29,6 +30,7 @@ SRCS = $(SRCS_DIR)malloc.c \
 	$(SRCS_DIR)block.c \
 	$(SRCS_DIR)block_utils.c \
 	$(SRCS_DIR)utils/ft_memcpy.c \
+	$(SRCS_DIR)utils/ft_memset.c \
 	$(SRCS_DIR)utils/print_utils.c \
 
 TEST_SRCS = $(TESTS_DIR)test.c

@@ -8,7 +8,8 @@ static char		*get_str_type(const t_zone_type type);
 static t_zone	*find_next_zone(const uintptr_t last);
 static void		print_zone_header(t_zone *zone);
 static void		print_block_line(t_block *block);
-static void		print_total(size_t total);
+static void		print_total(size_t bytes_count, const size_t blocks_count);
+
 
 /**
  * @brief Show all allocated zone in ascending order
@@ -18,7 +19,8 @@ void	show_alloc_mem(void)
 	uintptr_t	last = 0;
 	t_zone		*z = NULL;
 	t_block		*b = NULL;
-	size_t		total_alloc = 0;
+	size_t		bytes_count = 0;
+	size_t		blocks_count = 0;
 
 	while ( ( z = find_next_zone(last) ) != NULL )
 	{
@@ -31,13 +33,14 @@ void	show_alloc_mem(void)
 			if (b->free == 0)
 			{
 				print_block_line(b);
-				total_alloc += b->payload_size;
+				bytes_count += b->payload_size;
+				blocks_count++;
 			}
 			b = b->next;
 		}
 		last = (uintptr_t) z;
 	}
-	print_total(total_alloc);
+	print_total(bytes_count, blocks_count);
 }
 
 
@@ -120,9 +123,11 @@ static void	print_block_line(t_block *block)
  * @brief Print the sum of all payloads
  * @param total The total size of payloads
  */
-static void	print_total(size_t total)
+static void	print_total(size_t bytes_count, const size_t blocks_count)
 {
-	put_str("Total : ");
-	put_size(total);
-	put_str(" bytes\n");
+	put_str("Total of ");
+	put_size(bytes_count);
+	put_str(" bytes in ");
+	put_size(blocks_count);
+	put_str(" blocks\n");
 }

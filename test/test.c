@@ -1,18 +1,48 @@
 #include <stdlib.h>
-#include <stdio.h>
+#include <unistd.h>
 #include <string.h>
 
 #include "../include/alloc.h"
 
 int	main(void)
 {
-	void *ptr = malloc(5120);
+	write(1, "\n\n", 2);
 
-	ptr = realloc(ptr, 13);
+	// void *ptr_1 = malloc(32);
+	// void *ptr_2 = malloc(64);
+	// void *ptr_3 = malloc(420);
+	// void *ptr_4 = malloc(2401);
 
-	(void) ptr;
+
+	// show_alloc_mem();
+	// write(1, "\n\n", 2);
+
+	// free(ptr_1);
+	// ptr_3 = realloc(ptr_3, 64);
+	// ptr_4 = realloc(ptr_4, 128);
+
+	// show_alloc_mem();
+	// write(1, "\n\n", 2);
+
+	// free(ptr_2);
+	// free(ptr_3);
+	// free(ptr_4);
+
 
 	show_alloc_mem();
+	write(1, "\n\n", 2);
+
+
+	void	*arr[200] = {};
+
+	for (uint32_t i = 0; i < 200; i++)
+		arr[i] = malloc(64);
+
+	(void) arr;
+
+	show_alloc_mem();
+	write(1, "\n\n", 2);
+
 
 
 	return (0);

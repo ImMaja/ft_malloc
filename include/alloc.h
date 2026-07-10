@@ -59,13 +59,10 @@ typedef struct s_allocator
 	size_t	page_size;
 }	t_allocator;
 
-/** malloc.c */
+/** alloc/ */
 void		*malloc(size_t size);
-
-/** realloc.c */
 void		*realloc(void *ptr, size_t size);
-
-/** free.c */
+void		*calloc(size_t nmemb, size_t size);
 void		free(void *ptr);
 
 /** show_alloc_mem.c */
@@ -104,6 +101,7 @@ t_block		*find_block_from_payload_ptr(const t_zone *zone, const void *payload_pt
 
 /** utils/ */
 void		*ft_memcpy(void *dest, const void *src, size_t n);
+void		*ft_memset(void *s, int c, size_t n);
 void		put_str(const char *s);
 void		put_size(size_t n);
 void		put_hex(uintptr_t n);

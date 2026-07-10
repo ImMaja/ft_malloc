@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../ft_printf/ft_printf.h"
 #include "../include/alloc.h"
 
 int	main(void)
@@ -13,7 +12,6 @@ int	main(void)
 
 	(void) ptr;
 
-	ft_printf("\n\n");
 	show_alloc_mem();
 
 

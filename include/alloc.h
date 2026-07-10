@@ -3,6 +3,7 @@
 
 # include <stddef.h>
 # include <stdbool.h>
+# include <stdint.h>
 
 /** Align number to 16 macro */
 #define ALIGNMENT 16
@@ -46,6 +47,7 @@ typedef struct s_zone
 {
 	t_zone_type		type;
 	size_t			size;
+	size_t			used_blocks;
 	t_block			*blocks;
 	struct s_zone	*next;
 	struct s_zone	*prev;
@@ -75,28 +77,36 @@ size_t		get_page_size(void);
 
 /** align.c */
 int			normalize_size(size_t *size);
+size_t		align_page(const size_t size);
 
 /** zone.c */
 t_zone		*create_new_zone(const t_zone_type type, const size_t size);
 t_zone		*find_zone_from_payload_ptr(const void *ptr);
 int			reduce_large_zone_size(t_zone *zone, const size_t realloc_size, const size_t new_zone_size);
+int			delete_zone(t_zone *zone);
 
 /** zone_utils.c */
 t_zone_type	get_zone_type_by_size(const size_t size);
 size_t		calculate_zone_size(const t_zone_type type, const size_t size);
 void		push_zone(t_zone *new_zone);
+void		unlink_zone(t_zone *prev, t_zone *next);
+t_zone		*find_empty_zone(const t_zone_type type, const t_zone *exclude);
 
 /** block.c */
 int			create_default_block(t_zone *zone);
-t_block		*find_free_block(const t_zone_type type, const size_t size);
 void		split_block(t_block *block, const size_t size);
-t_block		*find_block_from_payload_ptr(const t_zone *zone, const void *payload_ptr);
 int			inplace_grow(t_block *block, const size_t new_size);
 
 /** block_utils.c */
-
+int			find_free_block(const t_zone_type type, const size_t size, t_zone **out_zone, t_block **out_block);
+void		merge_free_blocks(t_block *block);
+t_block		*find_block_from_payload_ptr(const t_zone *zone, const void *payload_ptr);
 
 /** utils/ */
 void		*ft_memcpy(void *dest, const void *src, size_t n);
+void		put_str(const char *s);
+void		put_size(size_t n);
+void		put_hex(uintptr_t n);
+void		put_addr(uintptr_t addr);
 
 #endif /** ALLOC_H */

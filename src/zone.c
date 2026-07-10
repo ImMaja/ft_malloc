@@ -1,6 +1,5 @@
 #include <unistd.h>
 #include <sys/mman.h>
-#include <stdint.h>
 
 #include "../include/alloc.h"
 
@@ -28,6 +27,7 @@ t_zone	*create_new_zone(const t_zone_type type, const size_t size)
 	// Initialize new zone header
 	mem->type = type;
 	mem->size = zone_length;
+	mem->used_blocks = 0;
 	mem->blocks = NULL;
 	mem->next = NULL;
 	mem->prev = NULL;
@@ -35,7 +35,7 @@ t_zone	*create_new_zone(const t_zone_type type, const size_t size)
 	// Initialize a default block for the new zone
 	// Creating a default block should not fail, but in case it did,
 	// we simply munmap the zone and return NULL
-	if (create_default_block(mem) == 1)
+	if (create_default_block(mem) != 0)
 	{
 		munmap((void *) mem, zone_length);
 		return (NULL);
@@ -45,31 +45,6 @@ t_zone	*create_new_zone(const t_zone_type type, const size_t size)
 	push_zone(mem);
 
 	return (mem);
-}
-
-
-/**
- * @brief Search in wich zone the ptr is
- * @param ptr Pointer to a payload
- * @return Corresponding zone pointer if found
- * NULL otherwise
- */
-t_zone	*find_zone_from_payload_ptr(const void *ptr)
-{
-	const uintptr_t	payload_addr = (uintptr_t) ptr;
-	t_zone	*z = *get_zones();
-	uintptr_t		z_end_addr = 0;
-
-	// Iterate zones linked-list, check if the
-	// payload_addr is in the range of a zone
-	while (z)
-	{
-		z_end_addr = (uintptr_t) ( (char *) z + z->size );
-		if (payload_addr > (uintptr_t) z && payload_addr < z_end_addr)
-			return (z);
-		z = z->next;
-	}
-	return (NULL);
 }
 
 
@@ -87,13 +62,13 @@ int	reduce_large_zone_size(t_zone *zone, const size_t realloc_size, const size_t
 	int		munmap_ret = -1;
 	t_block	*free_block = NULL;
 
-	// If this fail, we are so fucked
+	// Should not happen i guess
 	if (!zone || zone->type != LARGE || !zone->blocks)
-		return (1);
+		return (-1);
 	if (new_zone_size >= zone->size)
-		return (1);
+		return (-1);
 	if (new_zone_size < ZONE_HEADER_SIZE + BLOCK_HEADER_SIZE + realloc_size)
-		return (1);
+		return (-1);
 
 	cut = (void *) ( (char *) zone + new_zone_size );
 	munmap_size = zone->size - new_zone_size;
@@ -129,5 +104,33 @@ int	reduce_large_zone_size(t_zone *zone, const size_t realloc_size, const size_t
 		zone->blocks->payload_size = zone->size - ZONE_HEADER_SIZE - BLOCK_HEADER_SIZE;
 	}
 
+	return (0);
+}
+
+
+/**
+ * @brief Delete a zone. Munmap and unlink zone
+ * If somethings goes wrong, zone is not deleted and not unlinked
+ * @param zone The zone to remove
+ * @return 0 on success, != 0 on failure
+ */
+int	delete_zone(t_zone *zone)
+{
+	int		munmap_ret = -1;
+	t_zone	*prev = NULL;
+	t_zone	*next = NULL;
+
+	if (!zone)
+		return (-1);
+
+	prev = zone->prev;
+	next = zone->next;
+
+	// Munmap zone, return immediatly in case of failure
+	munmap_ret = munmap(zone, zone->size);
+	if (munmap_ret != 0)
+		return (munmap_ret);
+
+	unlink_zone(prev, next);
 	return (0);
 }

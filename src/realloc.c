@@ -20,12 +20,12 @@ void	*realloc(void *ptr, size_t size)
 	}
 
 	zone = find_zone_from_payload_ptr(ptr);
-	// Not an address from my allocator, wtf bro?
+	// Not an address from my allocator
 	if (!zone)
 		return (NULL);
 
 	block = find_block_from_payload_ptr(zone, ptr);
-	// Not a valid payload address, again wtf?
+	// Not a valid payload address
 	if (!block)
 		return (NULL);
 
@@ -87,6 +87,8 @@ static void	*shrink_realloc_internal(void *ptr, const size_t size, t_zone *zone,
 		{
 			// Calculate new size of the zone
 			new_zone_size = calculate_zone_size(LARGE, size);
+			if (new_zone_size == 0)
+				return (NULL);
 
 			// Realloc does not reduce zone size
 			if (new_zone_size == zone->size)

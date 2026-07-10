@@ -1,16 +1,14 @@
 #include <stdint.h>
+#include <unistd.h>
 
-#include "../ft_printf/ft_printf.h"
 #include "../include/alloc.h"
 
-#include <stdint.h>
-
-#include "../ft_printf/ft_printf.h"
-#include "../include/alloc.h"
 
 static char		*get_str_type(const t_zone_type type);
 static t_zone	*find_next_zone(const uintptr_t last);
-
+static void		print_zone_header(t_zone *zone);
+static void		print_block_line(t_block *block);
+static void		print_total(size_t total);
 
 /**
  * @brief Show all allocated zone in ascending order
@@ -24,22 +22,22 @@ void	show_alloc_mem(void)
 
 	while ( ( z = find_next_zone(last) ) != NULL )
 	{
-		ft_printf("%s : %p\n", get_str_type(z->type), z);
+		print_zone_header(z);
 		b = z->blocks;
 		if (!b)
-			ft_printf("No block in this zone, wtf?\n");
+			write(1, "Empty zone\n", 11);
 		while (b)
 		{
 			if (b->free == 0)
 			{
-				ft_printf("%p - %p : %d bytes\n", (uintptr_t) b + BLOCK_HEADER_SIZE, (uintptr_t) b + BLOCK_HEADER_SIZE + b->payload_size, b->payload_size);
+				print_block_line(b);
 				total_alloc += b->payload_size;
 			}
 			b = b->next;
 		}
 		last = (uintptr_t) z;
 	}
-	ft_printf("Total : %d bytes\n", total_alloc);
+	print_total(total_alloc);
 }
 
 
@@ -55,7 +53,7 @@ static char	*get_str_type(const t_zone_type type)
 		return ("SMALL");
 	else if (type == LARGE)
 		return ("LARGE");
-	return ("wtf?");
+	return ("???");
 }
 
 
@@ -81,4 +79,50 @@ static t_zone	*find_next_zone(const uintptr_t last)
 	}
 
 	return (best);
+}
+
+
+/**
+ * @brief Print zone type and beginning address
+ * @param zone The zone to print
+ */
+static void	print_zone_header(t_zone *zone)
+{
+	put_str(get_str_type(zone->type));
+	put_str(" : ");
+	put_addr((uintptr_t)zone);
+	put_str("\n");
+}
+
+
+/**
+ * @brief Print block range addresses and size
+ * @param block The block to print
+ */
+static void	print_block_line(t_block *block)
+{
+	uintptr_t	start;
+	uintptr_t	end;
+
+	start = (uintptr_t)block + BLOCK_HEADER_SIZE;
+	end = start + block->payload_size;
+
+	put_addr(start);
+	put_str(" - ");
+	put_addr(end);
+	put_str(" : ");
+	put_size(block->payload_size);
+	put_str(" bytes\n");
+}
+
+
+/**
+ * @brief Print the sum of all payloads
+ * @param total The total size of payloads
+ */
+static void	print_total(size_t total)
+{
+	put_str("Total : ");
+	put_size(total);
+	put_str(" bytes\n");
 }

@@ -14,7 +14,7 @@ int	test_malloc_boundaries(void)
 	{
 		ptr = malloc(sizes[i]);
 		TEST_ASSERT(ptr != NULL);
-		TEST_ASSERT((uintptr_t)ptr % ALIGNMENT == 0);
+		TEST_ASSERT((uintptr_t)ptr % _Alignof(max_align_t) == 0);
 		test_fill(ptr, sizes[i], (unsigned char)(0x20 + i));
 		TEST_ASSERT(test_memory_is(ptr, sizes[i],
 				(unsigned char)(0x20 + i)));

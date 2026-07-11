@@ -112,7 +112,6 @@ void			*ft_memcpy(void *dest, const void *src, size_t n);
 void			*ft_memset(void *s, int c, size_t n);
 void			put_str(const char *s);
 void			put_size(size_t n);
-void			put_hex(uintptr_t n);
 void			put_addr(uintptr_t addr);
 
 #endif /** ALLOC_INTERNAL_H */

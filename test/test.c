@@ -40,6 +40,7 @@ int	main(void)
 		{"realloc: large shrinking", test_realloc_large_shrink},
 		{"realloc: failure keeps original", test_realloc_failure},
 		{"stress: deterministic mixed operations", test_stress},
+		{"thread safety: concurrent mixed operations", test_thread_safety},
 	};
 	const size_t		test_count = sizeof(tests) / sizeof(tests[0]);
 	size_t			i;

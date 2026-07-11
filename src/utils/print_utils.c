@@ -3,6 +3,10 @@
 
 #include "alloc_internal.h"
 
+static void	put_hex(uintptr_t n);
+
+
+
 void	put_str(const char *s)
 {
 	size_t	len;
@@ -35,7 +39,7 @@ void	put_size(size_t n)
 	write(1, &buffer[i], sizeof(buffer) - i);
 }
 
-void	put_hex(uintptr_t n)
+static void	put_hex(uintptr_t n)
 {
 	const char	base[] = "0123456789abcdef";
 	char		buffer[sizeof(uintptr_t) * 2];

@@ -12,6 +12,7 @@ PROJECT_INPUTS = $(PROJECT_DIR)/Makefile \
 
 CC = cc
 CFLAGS = -Wall -Wextra -Werror \
+	-pthread \
 	-fno-builtin-malloc \
 	-fno-builtin-calloc \
 	-fno-builtin-realloc \
@@ -33,7 +34,8 @@ TEST_SRCS = test.c \
 	test_malloc.c \
 	test_free.c \
 	test_realloc.c \
-	test_stress.c
+	test_stress.c \
+	test_thread.c
 SHOW_TEST_SRCS = test_show_alloc_mem.c
 PRELOAD_TEST_SRCS = test_preload.c
 

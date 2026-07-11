@@ -7,7 +7,7 @@
 # include <string.h>
 # include <unistd.h>
 
-# include "alloc.h"
+# include "ft_malloc.h"
 
 # define TEST_ASSERT(condition) \
 	do \
@@ -40,5 +40,6 @@ int		test_realloc_zone_transitions(void);
 int		test_realloc_large_shrink(void);
 int		test_realloc_failure(void);
 int		test_stress(void);
+int		test_thread_safety(void);
 
 #endif

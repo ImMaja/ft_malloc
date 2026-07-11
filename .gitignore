@@ -2,3 +2,4 @@ en.subject.pdf
 objs/
 libft_malloc.so
 libft_malloc_*.so
+/example

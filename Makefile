@@ -4,6 +4,8 @@ endif
 
 NAME = libft_malloc_$(HOSTTYPE).so
 LINK = libft_malloc.so
+EXAMPLE_NAME = example
+EXAMPLE_SRC = example.c
 
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -fPIC -pthread -fvisibility=hidden
@@ -46,6 +48,10 @@ $(NAME): $(OBJS)
 $(LINK): $(NAME)
 	@ln -sf $(NAME) $(LINK)
 
+$(EXAMPLE_NAME): $(EXAMPLE_SRC) $(LINK)
+	@echo "Linking $@"
+	$(CC) -Wall -Wextra -Werror -o $@ $(EXAMPLE_SRC) -ldl
+
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.c
 	@mkdir -p $(@D)
 	@echo "Compiling $<"
@@ -55,7 +61,7 @@ clean:
 	@rm -rf $(OBJS_DIR)
 
 fclean: clean
-	@rm -f $(NAME) $(LINK)
+	@rm -f $(NAME) $(LINK) $(EXAMPLE_NAME)
 
 re: fclean all
 

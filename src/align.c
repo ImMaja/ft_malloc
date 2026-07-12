@@ -14,7 +14,7 @@ int	normalize_size(size_t *size)
 	if (!size)
 		return (-1);
 
-	if (size == 0)
+	if (*size == 0)
 		*size = MIN_PAYLOAD_SIZE;
 
 	if (*size > SIZE_MAX - (ALIGNMENT - 1))

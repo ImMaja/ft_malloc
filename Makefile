@@ -50,7 +50,7 @@ $(LINK): $(NAME)
 
 $(EXAMPLE_NAME): $(EXAMPLE_SRC) $(LINK)
 	@echo "Linking $@"
-	$(CC) -Wall -Wextra -Werror -o $@ $(EXAMPLE_SRC) -ldl
+	$(CC) -Wall -Wextra -Werror -pthread -o $@ $(EXAMPLE_SRC) -ldl
 
 $(OBJS_DIR)%.o: $(SRCS_DIR)%.c
 	@mkdir -p $(@D)

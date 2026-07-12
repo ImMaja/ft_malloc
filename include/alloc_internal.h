@@ -59,7 +59,6 @@ typedef struct s_allocator
 	t_zone			*zones;
 	size_t			page_size;
 	pthread_mutex_t	alloc_mutex;
-
 }	t_allocator;
 
 

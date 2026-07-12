@@ -1,13 +1,17 @@
 #include <stdint.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <dlfcn.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 #include "include/ft_malloc.h"
 
+#define ALLOC 10
+
 typedef void	(*t_show_alloc_mem)(void);
 
-static void	show_allocations(void)
+void	show_allocations(void)
 {
 	t_show_alloc_mem	show;
 
@@ -64,3 +68,44 @@ int	main(void)
 
 	return (0);
 }
+
+
+
+
+// static void	*print_hello(void *arg)
+// {
+// 	(void)arg;
+
+// 	void	*allocs[ALLOC] = {};
+// 	printf("hello world from thread %lu\n", (unsigned long)pthread_self());
+
+// 	for (uint16_t i = 0 ; i < ALLOC ; i++)
+// 		allocs[i] = malloc(42);
+
+// 	(void) allocs;
+// 	for (uint16_t i = 0 ; i < ALLOC ; i++)
+// 		free(allocs[i]);
+
+// 	write(STDOUT_FILENO, "\n\n", 2);
+// 	show_allocations();
+// 	write(STDOUT_FILENO, "\n\n", 2);
+
+// 	return (NULL);
+// }
+
+// int	main(void)
+// {
+// 	pthread_t	thread_1;
+// 	pthread_t	thread_2;
+
+// 	if (pthread_create(&thread_1, NULL, print_hello, NULL) != 0)
+// 		return (1);
+// 	if (pthread_create(&thread_2, NULL, print_hello, NULL) != 0)
+// 	{
+// 		pthread_join(thread_1, NULL);
+// 		return (1);
+// 	}
+// 	pthread_join(thread_1, NULL);
+// 	pthread_join(thread_2, NULL);
+// 	return (0);
+// }
